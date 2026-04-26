@@ -1,6 +1,6 @@
 """
 AireLab - Modulo de Analisis de Datos
-Procesa los CSVs con Pandas y conecta con datos de aire en tiempo real
+Procesa los datos de Google Sheets con Pandas y conecta con datos de aire en tiempo real
 """
 
 import os
@@ -8,35 +8,35 @@ import pandas as pd
 from datetime import datetime
 import sys
 
-# Agregar src/ al path para importar openweather
+# Agregar src/ al path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from openweather import obtener_datos_actuales
-
-# Rutas
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-RUTA_ENCUESTAS = os.path.join(BASE_DIR, 'data', 'encuestas.csv')
-RUTA_SUSCRIPTORES = os.path.join(BASE_DIR, 'data', 'suscriptores.csv')
+from sheets import leer_encuestas, leer_suscriptores
 
 
 def cargar_encuestas():
-    if os.path.exists(RUTA_ENCUESTAS):
-        try:
-            return pd.read_csv(RUTA_ENCUESTAS)
-        except Exception as e:
-            print(f"Error cargando encuestas: {e}")
+    """Carga las encuestas desde Google Sheets como DataFrame."""
+    try:
+        registros = leer_encuestas()
+        if not registros:
             return pd.DataFrame()
-    return pd.DataFrame()
+        return pd.DataFrame(registros)
+    except Exception as e:
+        print(f"Error cargando encuestas desde Sheets: {e}")
+        return pd.DataFrame()
 
 
 def cargar_suscriptores():
-    if os.path.exists(RUTA_SUSCRIPTORES):
-        try:
-            return pd.read_csv(RUTA_SUSCRIPTORES)
-        except Exception as e:
-            print(f"Error cargando suscriptores: {e}")
+    """Carga los suscriptores desde Google Sheets como DataFrame."""
+    try:
+        registros = leer_suscriptores()
+        if not registros:
             return pd.DataFrame()
-    return pd.DataFrame()
+        return pd.DataFrame(registros)
+    except Exception as e:
+        print(f"Error cargando suscriptores desde Sheets: {e}")
+        return pd.DataFrame()
 
 
 def obtener_stats_publicas():
@@ -45,7 +45,11 @@ def obtener_stats_publicas():
     df = cargar_encuestas()
     df_subs = cargar_suscriptores()
     
-    # NUEVO: Obtener datos del aire ahorita
+    # Solo contar suscriptores activos
+    total_subs_activos = 0
+    if not df_subs.empty and 'estado' in df_subs.columns:
+        total_subs_activos = (df_subs['estado'].astype(str).str.lower() == 'activo').sum()
+    
     datos_aire = obtener_datos_actuales()
     
     if df.empty:
@@ -53,7 +57,7 @@ def obtener_stats_publicas():
             "exito": False,
             "mensaje": "Aun no hay respuestas en la encuesta. Se el primero!",
             "total_respuestas": 0,
-            "total_suscriptores": len(df_subs),
+            "total_suscriptores": int(total_subs_activos),
             "aire_actual": datos_aire if datos_aire.get('exito') else None
         }
     
@@ -142,15 +146,12 @@ def obtener_stats_publicas():
                     if v in vulnerables_count:
                         vulnerables_count[v] += 1
     
-    # ============================================
-    # NUEVO: ANALISIS DE CORRELACION AIRE - SALUD
-    # ============================================
     correlacion = analizar_correlacion(df, datos_aire)
     
     return {
         "exito": True,
         "total_respuestas": total,
-        "total_suscriptores": len(df_subs),
+        "total_suscriptores": int(total_subs_activos),
         "ultima_respuesta": ultima_fecha,
         "porcentajes": {
             "con_sintomas": pct_sintomas,
@@ -168,10 +169,7 @@ def obtener_stats_publicas():
 
 
 def analizar_correlacion(df, datos_aire):
-    """
-    Analiza la posible relacion entre la calidad del aire y los sintomas reportados
-    Esta es la PARTE CIENTIFICA mas importante del proyecto.
-    """
+    """Analiza la posible relacion entre la calidad del aire y los sintomas reportados."""
     
     if df.empty or not datos_aire.get('exito'):
         return None
@@ -182,26 +180,22 @@ def analizar_correlacion(df, datos_aire):
     
     total = len(df)
     
-    # Cuantos reportaron sintomas
     con_sintomas = 0
     if 'sintomas' in df.columns:
         con_sintomas = (df['sintomas'] == 'si').sum()
     
     pct_sintomas = round(con_sintomas / total * 100, 1) if total > 0 else 0
     
-    # Cuantos hogares tienen vulnerables
     con_vulnerables = 0
     if 'vulnerables' in df.columns:
         for valor in df['vulnerables'].dropna():
             if isinstance(valor, str) and valor != 'ninguna' and valor.strip():
-                # Si tiene cualquier vulnerable que no sea 'ninguna'
                 valores = [v.strip() for v in valor.split(',')]
                 if any(v != 'ninguna' for v in valores):
                     con_vulnerables += 1
     
     pct_vulnerables = round(con_vulnerables / total * 100, 1) if total > 0 else 0
     
-    # Generar mensaje educativo segun el nivel
     if nivel_color == 'verde':
         interpretacion = {
             "titulo": "Hoy el aire esta limpio",
