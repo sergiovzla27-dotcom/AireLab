@@ -1,0 +1,482 @@
+    <!DOCTYPE html>
+    <html lang="es" data-tema="claro">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="theme-color" content="#1a5f6f">
+        <title>Activar Alertas - AireLab</title>
+        
+        <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.png') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/alertas.css') }}">
+    </head>
+    <body>
+
+        <header class="header">
+        <div class="logo-area">
+            <div class="logo-circulo">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="AireLab">
+            </div>
+            <div class="logo-text">
+                <div class="logo-nombre">AireLab</div>
+                <div class="logo-slogan">analizando lo invisible</div>
+            </div>
+        </div>
+        
+        <div class="header-acciones">
+            <nav class="nav-links">
+                <a href="/">
+                    <i data-lucide="home"></i>
+                    <span>Inicio</span>
+                </a>
+                <a href="/encuesta">
+                    <i data-lucide="clipboard-list"></i>
+                    <span>Encuesta</span>
+                </a>
+                <a href="/alertas">
+                    <i data-lucide="bell"></i>
+                    <span>Alertas</span>
+                </a>
+                <a href="/resultados">
+                    <i data-lucide="bar-chart-3"></i>
+                    <span>Resultados</span>
+                </a>
+                <a href="/sobre" class="active">
+                    <i data-lucide="info"></i>
+                    <span>Sobre</span>
+                </a>
+            </nav>
+            
+            <button class="tema-switch" onclick="cambiarTema()">
+                <i data-lucide="moon" class="tema-icono-claro"></i>
+                <i data-lucide="sun" class="tema-icono-oscuro"></i>
+            </button>
+        </div>
+    </header>
+
+        <div class="container alertas-container">
+
+            <!-- CARD INTRO -->
+            <div class="card alertas-intro">
+                <div class="alertas-icono-grande">
+                    <i data-lucide="bell-ring"></i>
+                </div>
+                <h1>Recibe alertas en tu celular</h1>
+                <p class="alertas-subtitulo">
+                    Te avisamos cuando el aire en Navojoa sea peligroso para tu salud
+                </p>
+
+                <div class="alertas-beneficios">
+                    <div class="alertas-beneficio">
+                        <i data-lucide="zap"></i>
+                        <span>Avisos en tiempo real</span>
+                    </div>
+                    <div class="alertas-beneficio">
+                        <i data-lucide="shield-check"></i>
+                        <span>Protege a tu familia</span>
+                    </div>
+                    <div class="alertas-beneficio">
+                        <i data-lucide="heart"></i>
+                        <span>100% gratis</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FORMULARIO -->
+            <form id="formAlertas" class="alertas-form" onsubmit="enviarSuscripcion(event)">
+
+                <!-- DATOS BÁSICOS -->
+                <div class="card alertas-card">
+                    <div class="alertas-section-header">
+                        <div class="alertas-section-icono">
+                            <i data-lucide="user"></i>
+                        </div>
+                        <div>
+                            <h2>Tus datos</h2>
+                            <p>Solo lo necesario para enviarte alertas</p>
+                        </div>
+                    </div>
+
+                    <div class="campo-grupo">
+                        <label class="campo-label">
+                            <i data-lucide="user-circle"></i>
+                            <span>Tu nombre</span>
+                        </label>
+                        <input 
+                            type="text" 
+                            name="nombre" 
+                            class="campo-input"
+                            placeholder="Ejemplo: María González" 
+                            required
+                            minlength="3"
+                        >
+                    </div>
+
+                    <div class="campo-grupo">
+                        <label class="campo-label">
+                            <i data-lucide="calendar"></i>
+                            <span>Tu edad</span>
+                        </label>
+                        <select name="edad" class="campo-input" required>
+                            <option value="">-- Selecciona --</option>
+                            <option value="menor_18">Menos de 18 años</option>
+                            <option value="18_30">18 a 30 años</option>
+                            <option value="31_45">31 a 45 años</option>
+                            <option value="46_60">46 a 60 años</option>
+                            <option value="mayor_60">Más de 60 años</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- GRUPO VULNERABLE -->
+                <div class="card alertas-card">
+                    <div class="alertas-section-header">
+                        <div class="alertas-section-icono">
+                            <i data-lucide="heart-pulse"></i>
+                        </div>
+                        <div>
+                            <h2>¿Perteneces a un grupo vulnerable?</h2>
+                            <p>Para enviarte recomendaciones más adecuadas</p>
+                        </div>
+                    </div>
+
+                    <div class="opciones-vulnerables">
+                        <label class="opcion-vulnerable">
+                            <input type="checkbox" name="vulnerable" value="nino">
+                            <div class="opcion-contenido">
+                                <i data-lucide="baby"></i>
+                                <div>
+                                    <strong>Niño menor de 5 años</strong>
+                                    <span>Padre o tutor responde por él/ella</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="opcion-vulnerable">
+                            <input type="checkbox" name="vulnerable" value="adulto_mayor">
+                            <div class="opcion-contenido">
+                                <i data-lucide="user-round"></i>
+                                <div>
+                                    <strong>Adulto mayor de 60 años</strong>
+                                    <span>Mayor riesgo respiratorio</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="opcion-vulnerable">
+                            <input type="checkbox" name="vulnerable" value="asma">
+                            <div class="opcion-contenido">
+                                <i data-lucide="activity"></i>
+                                <div>
+                                    <strong>Tengo asma o bronquitis</strong>
+                                    <span>Recibirás alertas más sensibles</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="opcion-vulnerable">
+                            <input type="checkbox" name="vulnerable" value="otra_resp">
+                            <div class="opcion-contenido">
+                                <i data-lucide="lungs"></i>
+                                <div>
+                                    <strong>Otra enfermedad respiratoria</strong>
+                                    <span>Cualquier padecimiento del pulmón</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="opcion-vulnerable">
+                            <input type="checkbox" name="vulnerable" value="ninguno">
+                            <div class="opcion-contenido">
+                                <i data-lucide="check-circle"></i>
+                                <div>
+                                    <strong>Ninguno (estoy sano)</strong>
+                                    <span>Solo quiero estar informado</span>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- MEDIOS DE CONTACTO -->
+                <div class="card alertas-card">
+                    <div class="alertas-section-header">
+                        <div class="alertas-section-icono">
+                            <i data-lucide="message-circle"></i>
+                        </div>
+                        <div>
+                            <h2>¿Cómo quieres recibir las alertas?</h2>
+                            <p>Marca al menos una opción</p>
+                        </div>
+                    </div>
+
+                    
+                    <!-- WhatsApp - PROXIMAMENTE -->
+                <div class="canal-contacto canal-proximamente" id="canalWhatsapp">
+                    <label class="canal-header canal-deshabilitado">
+                        <input type="checkbox" name="canal_whatsapp" value="si" disabled>
+                        <div class="canal-info">
+                            <div class="canal-icono whatsapp">
+                                <i data-lucide="message-square"></i>
+                            </div>
+                            <div class="canal-texto">
+                                <div class="canal-titulo-row">
+                                    <strong>WhatsApp</strong>
+                                    <span class="badge-proximamente">
+                                        <i data-lucide="sparkles"></i>
+                                        Próximamente
+                                    </span>
+                                </div>
+                                <span>Avisos rápidos en tu celular (en desarrollo)</span>
+                            </div>
+                        </div>
+                    </label>
+                    <div class="canal-mensaje-proximo">
+                        <i data-lucide="info"></i>
+                        <span>Estamos trabajando en activar las notificaciones por WhatsApp. ¡Mientras tanto, puedes recibirlas por correo!</span>
+                    </div>
+                </div>
+
+                    <!-- Email -->
+                    <div class="canal-contacto" id="canalEmail">
+                        <label class="canal-header">
+                            <input type="checkbox" name="canal_email" value="si" onchange="toggleCampo('emailInput')">
+                            <div class="canal-info">
+                                <div class="canal-icono email">
+                                    <i data-lucide="mail"></i>
+                                </div>
+                                <div>
+                                    <strong>Correo electrónico</strong>
+                                    <span>Recibe avisos en tu email</span>
+                                </div>
+                            </div>
+                        </label>
+                        <div class="canal-campo" id="emailInput" style="display:none;">
+                            <label class="campo-label-pequeno">Tu correo</label>
+                            <input 
+                                type="email" 
+                                name="email" 
+                                class="campo-input"
+                                placeholder="ejemplo@correo.com"
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FRECUENCIA -->
+                <div class="card alertas-card">
+                    <div class="alertas-section-header">
+                        <div class="alertas-section-icono">
+                            <i data-lucide="bell"></i>
+                        </div>
+                        <div>
+                            <h2>¿Cuándo quieres recibir alertas?</h2>
+                            <p>Tú decides qué tan seguido</p>
+                        </div>
+                    </div>
+
+                    <div class="opciones-frecuencia">
+                        <label class="opcion-frecuencia">
+                            <input type="radio" name="frecuencia" value="solo_peligroso" required>
+                            <div class="frecuencia-contenido">
+                                <div class="frecuencia-color rojo"></div>
+                                <div>
+                                    <strong>Solo cuando sea peligroso</strong>
+                                    <span>Solo niveles rojos y morados (urgentes)</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="opcion-frecuencia">
+                            <input type="radio" name="frecuencia" value="precaucion" checked>
+                            <div class="frecuencia-contenido">
+                                <div class="frecuencia-color naranja"></div>
+                                <div>
+                                    <strong>Cuando haya precaución</strong>
+                                    <span>Niveles naranjas y peores (recomendado)</span>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="opcion-frecuencia">
+                            <input type="radio" name="frecuencia" value="diario">
+                            <div class="frecuencia-contenido">
+                                <div class="frecuencia-color verde"></div>
+                                <div>
+                                    <strong>Resumen diario</strong>
+                                    <span>Cada mañana te decimos cómo está el aire</span>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- PRIVACIDAD -->
+                <div class="card alertas-card alertas-privacidad">
+                    <label class="opcion-privacidad">
+                        <input type="checkbox" name="acepta" required>
+                        <div>
+                            <strong>Acepto recibir alertas de AireLab</strong>
+                            <p>Tus datos se usan únicamente para enviarte alertas. No los compartimos con terceros. Puedes darte de baja cuando quieras.</p>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- BOTÓN ENVIAR -->
+                <button type="submit" class="btn-activar-alertas">
+                    <i data-lucide="bell-ring"></i>
+                    <span>Activar mis alertas</span>
+                </button>
+
+            </form>
+
+            <!-- ÉXITO -->
+            <div class="card alertas-exito" id="exitoAlertas" style="display:none;">
+                <div class="exito-icono-grande">
+                    <i data-lucide="bell-ring"></i>
+                </div>
+                <h1>¡Listo, <span id="nombreSuscriptor">amigo</span>!</h1>
+                <p class="exito-mensaje">Estás suscrito a las alertas de AireLab. Te avisaremos cuando el aire necesite tu atención.</p>
+                
+                <div class="exito-comprobante">
+                    <i data-lucide="file-check"></i>
+                    <div>
+                        <span class="comprobante-label">Tu número de suscripción</span>
+                        <strong id="idSuscriptor">SUB-0000</strong>
+                    </div>
+                </div>
+
+                <div class="alertas-info-resumen">
+                    <h3>¿Qué sigue ahora?</h3>
+                    <div class="info-pasos">
+                        <div class="info-paso">
+                            <div class="paso-num">1</div>
+                            <p>Te llegará un mensaje de bienvenida en los próximos minutos</p>
+                        </div>
+                        <div class="info-paso">
+                            <div class="paso-num">2</div>
+                            <p>Recibirás alertas según tu preferencia configurada</p>
+                        </div>
+                        <div class="info-paso">
+                            <div class="paso-num">3</div>
+                            <p>Puedes darte de baja en cualquier momento respondiendo "BAJA"</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="exito-acciones">
+                    <a href="/" class="btn-principal">
+                        <i data-lucide="home"></i><span>Volver al inicio</span>
+                    </a>
+                    <a href="/encuesta" class="btn-secundario">
+                        <i data-lucide="clipboard-list"></i><span>Contestar encuesta</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="footer">
+            <div class="footer-contenido">
+                <i data-lucide="wind"></i>
+                <p><strong>AireLab</strong> © 2026 · analizando lo invisible</p>
+            </div>
+            <p>Monitoreo ciudadano · Navojoa, Sonora</p>
+        </footer>
+
+        <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+        <script>
+            // Tema
+            const temaGuardado = localStorage.getItem('airelabTema') || 'claro';
+            document.documentElement.setAttribute('data-tema', temaGuardado);
+
+            function cambiarTema() {
+                const t = document.documentElement.getAttribute('data-tema');
+                const nuevo = t === 'claro' ? 'oscuro' : 'claro';
+                document.documentElement.setAttribute('data-tema', nuevo);
+                localStorage.setItem('airelabTema', nuevo);
+            }
+
+            lucide.createIcons();
+
+            // Mostrar/ocultar campos de WhatsApp y Email
+            function toggleCampo(idCampo) {
+                const campo = document.getElementById(idCampo);
+                const checkbox = campo.previousElementSibling.querySelector('input[type="checkbox"]');
+                
+                if (checkbox.checked) {
+                    campo.style.display = 'block';
+                    const input = campo.querySelector('input');
+                    if (input) {
+                        input.required = true;
+                        input.focus();
+                    }
+                } else {
+                    campo.style.display = 'none';
+                    const input = campo.querySelector('input');
+                    if (input) {
+                        input.required = false;
+                        input.value = '';
+                    }
+                }
+            }
+
+            async function enviarSuscripcion(event) {
+                event.preventDefault();
+                
+                
+                // Validar que email esté marcado (WhatsApp deshabilitado por ahora)
+            const email = document.querySelector('input[name="canal_email"]').checked;
+            
+            if (!email) {
+                alert('Por favor activa las alertas por correo para recibir notificaciones.');
+                return;
+            }
+
+                const formData = new FormData(event.target);
+                const datos = {};
+                
+                formData.forEach((value, key) => {
+                    if (datos[key]) {
+                        if (!Array.isArray(datos[key])) datos[key] = [datos[key]];
+                        datos[key].push(value);
+                    } else {
+                        datos[key] = value;
+                    }
+                });
+
+                try {
+                    const respuesta = await fetch('/procesar-alerta', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(datos)
+                    });
+                    
+                    const resultado = await respuesta.json();
+                    
+                    if (resultado.exito) {
+                        // Mostrar nombre y ID
+                        const nombre = datos.nombre.split(' ')[0]; // Solo primer nombre
+                        document.getElementById('nombreSuscriptor').textContent = nombre;
+                        if (resultado.id) {
+                            document.getElementById('idSuscriptor').textContent = resultado.id;
+                        }
+                        
+                        document.getElementById('formAlertas').style.display = 'none';
+                        document.querySelector('.alertas-intro').style.display = 'none';
+                        document.getElementById('exitoAlertas').style.display = 'block';
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                        lucide.createIcons();
+                    } else {
+                        alert('Hubo un error al guardar tu suscripción. Intenta de nuevo.');
+                    }
+                } catch (error) {
+                    alert('Error de conexión. Verifica tu internet.');
+                    console.error(error);
+                }
+            }
+        </script>
+
+    </body>
+    </html>

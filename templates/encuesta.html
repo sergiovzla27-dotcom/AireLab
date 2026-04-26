@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="claro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a5f6f">
+    <title>Encuesta Ciudadana - AireLab</title>
+    
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/encuesta.css') }}">
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="logo-area">
+            <div class="logo-circulo">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="AireLab">
+            </div>
+            <div class="logo-text">
+                <div class="logo-nombre">AireLab</div>
+                <div class="logo-slogan">analizando lo invisible</div>
+            </div>
+        </div>
+        
+        <div class="header-acciones">
+            <nav class="nav-links">
+                <a href="/">
+                    <i data-lucide="home"></i>
+                    <span>Inicio</span>
+                </a>
+                <a href="/encuesta" class="active">
+                    <i data-lucide="clipboard-list"></i>
+                    <span>Encuesta</span>
+                </a>
+                <a href="/alertas">
+                    <i data-lucide="bell"></i>
+                    <span>Alertas</span>
+                </a>
+                <a href="/resultados">
+                    <i data-lucide="bar-chart-3"></i>
+                    <span>Resultados</span>
+                </a>
+                <a href="/sobre">
+                    <i data-lucide="info"></i>
+                    <span>Sobre</span>
+                </a>
+            </nav>
+            
+            <button class="tema-switch" onclick="cambiarTema()">
+                <i data-lucide="moon" class="tema-icono-claro"></i>
+                <i data-lucide="sun" class="tema-icono-oscuro"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- INTRO -->
+        <div class="card encuesta-intro" id="introCard">
+            <div class="intro-icono">
+                <i data-lucide="clipboard-list"></i>
+            </div>
+            <h1>Encuesta Ciudadana</h1>
+            <p class="intro-slogan">Tu opinión cuenta para mejorar Navojoa</p>
+            
+            <div class="intro-info-grid">
+                <div class="intro-info-item">
+                    <i data-lucide="clock"></i>
+                    <div>
+                        <strong>5 minutos</strong>
+                        <span>de tu tiempo</span>
+                    </div>
+                </div>
+                <div class="intro-info-item">
+                    <i data-lucide="help-circle"></i>
+                    <div>
+                        <strong>16 preguntas</strong>
+                        <span>cortas y claras</span>
+                    </div>
+                </div>
+                <div class="intro-info-item">
+                    <i data-lucide="shield"></i>
+                    <div>
+                        <strong>Anónima</strong>
+                        <span>no pedimos datos</span>
+                    </div>
+                </div>
+            </div>
+
+            <p class="intro-descripcion">
+                Tus respuestas nos ayudan a entender cómo afecta la calidad del aire a la salud de los habitantes de Navojoa. Los datos recolectados se usan únicamente con fines académicos.
+            </p>
+            
+            <button class="btn-iniciar-encuesta" onclick="iniciarEncuesta()">
+                <span>Comenzar encuesta</span>
+                <i data-lucide="arrow-right"></i>
+            </button>
+        </div>
+
+        <!-- FORMULARIO -->
+        <form id="encuestaForm" class="encuesta-form" style="display:none;" onsubmit="enviarEncuesta(event)">
+
+            <!-- Progreso -->
+            <div class="progreso-contenedor">
+                <div class="progreso-info">
+                    <span id="progresoTexto">Sección 1 de 4</span>
+                    <span id="progresoPorcentaje">25%</span>
+                </div>
+                <div class="progreso-barra-fondo">
+                    <div class="progreso-barra" id="progresoBarra" style="width: 25%;"></div>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 1 -->
+            <div class="seccion-encuesta" data-seccion="1">
+                <div class="seccion-titulo-wrap">
+                    <div class="seccion-numero">1</div>
+                    <div>
+                        <h2>Sobre ti</h2>
+                        <p>Para conocer quién eres (sin pedir datos personales)</p>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <label class="pregunta-label">
+                        <span class="pregunta-numero">1.</span>
+                        ¿Qué edad tienes?
+                    </label>
+                    <select name="edad" class="pregunta-select" required>
+                        <option value="">-- Selecciona --</option>
+                        <option value="menor_18">Menos de 18 años</option>
+                        <option value="18_24">18 a 24 años</option>
+                        <option value="25_34">25 a 34 años</option>
+                        <option value="35_44">35 a 44 años</option>
+                        <option value="45_mas">45 años o más</option>
+                    </select>
+                </div>
+
+                <div class="pregunta">
+                    <label class="pregunta-label">
+                        <span class="pregunta-numero">2.</span>
+                        ¿A qué te dedicas?
+                    </label>
+                    <div class="opciones-grupo">
+                        <label class="opcion-radio"><input type="radio" name="ocupacion" value="estudiante" required><span>Estudiante</span></label>
+                        <label class="opcion-radio"><input type="radio" name="ocupacion" value="trabajador"><span>Trabajador</span></label>
+                        <label class="opcion-radio"><input type="radio" name="ocupacion" value="ambos"><span>Ambos</span></label>
+                        <label class="opcion-radio"><input type="radio" name="ocupacion" value="otro"><span>Otro</span></label>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <label class="pregunta-label">
+                        <span class="pregunta-numero">3.</span>
+                        ¿Hay personas vulnerables en tu hogar? <span class="label-opcional">(puedes marcar varias)</span>
+                    </label>
+                    <div class="opciones-grupo">
+                        <label class="opcion-checkbox"><input type="checkbox" name="vulnerables" value="ninos"><span>Niños menores de 5 años</span></label>
+                        <label class="opcion-checkbox"><input type="checkbox" name="vulnerables" value="adultos_mayores"><span>Adultos mayores de 60 años</span></label>
+                        <label class="opcion-checkbox"><input type="checkbox" name="vulnerables" value="asma"><span>Personas con asma o bronquitis</span></label>
+                        <label class="opcion-checkbox"><input type="checkbox" name="vulnerables" value="ninguna"><span>Ninguna de las anteriores</span></label>
+                    </div>
+                </div>
+
+                <div class="seccion-navegacion">
+                    <button type="button" class="btn-seccion btn-siguiente" onclick="siguienteSeccion(1)">
+                        <span>Siguiente</span>
+                        <i data-lucide="arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 2 -->
+            <div class="seccion-encuesta" data-seccion="2" style="display:none;">
+                <div class="seccion-titulo-wrap">
+                    <div class="seccion-numero">2</div>
+                    <div>
+                        <h2>Salud y aire</h2>
+                        <p>Cuéntanos sobre tu salud respiratoria</p>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <label class="pregunta-label"><span class="pregunta-numero">4.</span> ¿Con qué frecuencia realizas actividades al aire libre?</label>
+                    <div class="opciones-grupo">
+                        <label class="opcion-radio"><input type="radio" name="actividades_aire" value="todos_dias" required><span>Todos los días</span></label>
+                        <label class="opcion-radio"><input type="radio" name="actividades_aire" value="varias_semana"><span>Varias veces a la semana</span></label>
+                        <label class="opcion-radio"><input type="radio" name="actividades_aire" value="ocasional"><span>Ocasionalmente</span></label>
+                        <label class="opcion-radio"><input type="radio" name="actividades_aire" value="casi_nunca"><span>Casi nunca</span></label>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <label class="pregunta-label"><span class="pregunta-numero">5.</span> ¿Cómo consideras la calidad del aire en Navojoa?</label>
+                    <div class="opciones-grupo">
+                        <label class="opcion-radio"><input type="radio" name="calidad_aire" value="muy_buena" required><span>Muy buena</span></label>
+                        <label class="opcion-radio"><input type="radio" name="calidad_aire" value="buena"><span>Buena</span></label>
+                        <label class="opcion-radio"><input type="radio" name="calidad_aire" value="regular"><span>Regular</span></label>
+                        <label class="opcion-radio"><input type="radio" name="calidad_aire" value="mala"><span>Mala</span></label>
+                        <label class="opcion-radio"><input type="radio" name="calidad_aire" value="muy_mala"><span>Muy mala</span></label>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <label class="pregunta-label"><span class="pregunta-numero">6.</span> ¿Has presentado síntomas respiratorios en los últimos 12 meses?</label>
+                    <p class="pregunta-nota">Tos, dificultad para respirar, flemas, irritación de garganta, etc.</p>
+                    <div class="opciones-grupo">
+                        <label class="opcion-radio"><input type="radio" name="sintomas" value="si" required><span>Sí</span></label>
+                        <label class="opcion-radio"><input type="radio" name="sintomas" value="no"><span>No</span></label>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <label class="pregunta-label"><span class="pregunta-numero">7.</span> Marca los meses en que te enfermaste de vías respiratorias</label>
+                    <p class="pregunta-nota">De mayo 2025 a abril 2026 (puedes marcar varios)</p>
+                    <div class="meses-grid">
+                        <label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="may_2025"><span>May 2025</span></label>
+                        <label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="jun_2025"><span>Jun 2025</span></label>
+                        <label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="jul_2025"><span>Jul 2025</span></label>
+                        <label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="ago_2025"><span>Ago 2025</span></label>
+                        <label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="sep_2025"><span>Sep 2025</span></label>
+                        <label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="oct_2025"><span>Oct 2025</span></label>
+                        <label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="nov_2025"><span>Nov 2025</span></label>
+                        <label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="dic_2025"><span>Dic 2025</span></label>
+                        <label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="ene_2026"><span>Ene 2026</span></label>
+                        <label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="feb_2026"><span>Feb 2026</span></label>
+                        <label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="mar_2026"><span>Mar 2026</span></label>
+                        <label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="abr_2026"><span>Abr 2026</span></label>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <label class="pregunta-label"><span class="pregunta-numero">8.</span> ¿Cuántas veces acudiste al médico por problemas respiratorios?</label>
+                    <p class="pregunta-nota">En el último año</p>
+                    <div class="opciones-grupo">
+                        <label class="opcion-radio"><input type="radio" name="visitas_medico" value="ninguna" required><span>Ninguna</span></label>
+                        <label class="opcion-radio"><input type="radio" name="visitas_medico" value="1_2"><span>1 a 2 veces</span></label>
+                        <label class="opcion-radio"><input type="radio" name="visitas_medico" value="3_5"><span>3 a 5 veces</span></label>
+                        <label class="opcion-radio"><input type="radio" name="visitas_medico" value="mas_5"><span>Más de 5 veces</span></label>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <label class="pregunta-label"><span class="pregunta-numero">9.</span> ¿Alguien en tu hogar ha sido diagnosticado con? <span class="label-opcional">(marca las que apliquen)</span></label>
+                    <div class="opciones-grupo">
+                        <label class="opcion-checkbox"><input type="checkbox" name="enfermedades" value="asma"><span>Asma</span></label>
+                        <label class="opcion-checkbox"><input type="checkbox" name="enfermedades" value="bronquitis"><span>Bronquitis</span></label>
+                        <label class="opcion-checkbox"><input type="checkbox" name="enfermedades" value="neumonia"><span>Neumonía</span></label>
+                        <label class="opcion-checkbox"><input type="checkbox" name="enfermedades" value="alergias"><span>Alergias respiratorias</span></label>
+                        <label class="opcion-checkbox"><input type="checkbox" name="enfermedades" value="ninguna"><span>Ninguna</span></label>
+                    </div>
+                </div>
+
+                <div class="seccion-navegacion">
+                    <button type="button" class="btn-seccion btn-anterior" onclick="seccionAnterior(2)">
+                        <i data-lucide="arrow-left"></i><span>Anterior</span>
+                    </button>
+                    <button type="button" class="btn-seccion btn-siguiente" onclick="siguienteSeccion(2)">
+                        <span>Siguiente</span><i data-lucide="arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 3 -->
+            <div class="seccion-encuesta" data-seccion="3" style="display:none;">
+                <div class="seccion-titulo-wrap">
+                    <div class="seccion-numero">3</div>
+                    <div>
+                        <h2>Sobre AireLab</h2>
+                        <p>Queremos saber tu opinión sobre la app</p>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <label class="pregunta-label"><span class="pregunta-numero">10.</span> ¿Sabías que la calidad del aire puede afectar tu salud?</label>
+                    <div class="opciones-grupo">
+                        <label class="opcion-radio"><input type="radio" name="sabia_calidad" value="si" required><span>Sí</span></label>
+                        <label class="opcion-radio"><input type="radio" name="sabia_calidad" value="no"><span>No</span></label>
+                        <label class="opcion-radio"><input type="radio" name="sabia_calidad" value="tal_vez"><span>Tal vez</span></label>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <label class="pregunta-label"><span class="pregunta-numero">11.</span> ¿Actualmente consultas información sobre la calidad del aire?</label>
+                    <div class="opciones-grupo">
+                        <label class="opcion-radio"><input type="radio" name="consulta_info" value="si" required><span>Sí</span></label>
+                        <label class="opcion-radio"><input type="radio" name="consulta_info" value="no"><span>No</span></label>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <label class="pregunta-label"><span class="pregunta-numero">12.</span> ¿Usarías una aplicación que te avise cuando el aire sea peligroso?</label>
+                    <div class="opciones-grupo">
+                        <label class="opcion-radio"><input type="radio" name="usaria_app" value="def_no" required><span>Definitivamente no</span></label>
+                        <label class="opcion-radio"><input type="radio" name="usaria_app" value="prob_no"><span>Probablemente no</span></label>
+                        <label class="opcion-radio"><input type="radio" name="usaria_app" value="no_seguro"><span>No estoy seguro</span></label>
+                        <label class="opcion-radio"><input type="radio" name="usaria_app" value="prob_si"><span>Probablemente sí</span></label>
+                        <label class="opcion-radio"><input type="radio" name="usaria_app" value="def_si"><span>Definitivamente sí</span></label>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <label class="pregunta-label"><span class="pregunta-numero">13.</span> ¿Qué funciones te interesarían en AireLab? <span class="label-opcional">(marca varias)</span></label>
+                    <div class="opciones-grupo">
+                        <label class="opcion-checkbox"><input type="checkbox" name="funciones" value="recomendaciones"><span>Recomendaciones de salud</span></label>
+                        <label class="opcion-checkbox"><input type="checkbox" name="funciones" value="notificaciones"><span>Notificaciones en el celular</span></label>
+                        <label class="opcion-checkbox"><input type="checkbox" name="funciones" value="alertas"><span>Alertas en tiempo real</span></label>
+                        <label class="opcion-checkbox"><input type="checkbox" name="funciones" value="historial"><span>Historial de contaminación</span></label>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <label class="pregunta-label"><span class="pregunta-numero">14.</span> ¿Qué te impediría usar esta aplicación?</label>
+                    <div class="opciones-grupo">
+                        <label class="opcion-checkbox"><input type="checkbox" name="impedimentos" value="sin_internet"><span>No tengo internet</span></label>
+                        <label class="opcion-checkbox"><input type="checkbox" name="impedimentos" value="no_confio"><span>No confío en la información</span></label>
+                        <label class="opcion-checkbox"><input type="checkbox" name="impedimentos" value="no_se_usar"><span>No sé usar apps</span></label>
+                        <label class="opcion-checkbox"><input type="checkbox" name="impedimentos" value="no_utilidad"><span>No le veo utilidad</span></label>
+                        <label class="opcion-checkbox"><input type="checkbox" name="impedimentos" value="ninguno"><span>Ningún impedimento</span></label>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <label class="pregunta-label"><span class="pregunta-numero">15.</span> ¿Recomendarías AireLab a familiares o amigos?</label>
+                    <div class="opciones-grupo">
+                        <label class="opcion-radio"><input type="radio" name="recomendaria" value="si" required><span>Sí</span></label>
+                        <label class="opcion-radio"><input type="radio" name="recomendaria" value="no"><span>No</span></label>
+                        <label class="opcion-radio"><input type="radio" name="recomendaria" value="tal_vez"><span>Tal vez</span></label>
+                    </div>
+                </div>
+
+                <div class="seccion-navegacion">
+                    <button type="button" class="btn-seccion btn-anterior" onclick="seccionAnterior(3)">
+                        <i data-lucide="arrow-left"></i><span>Anterior</span>
+                    </button>
+                    <button type="button" class="btn-seccion btn-siguiente" onclick="siguienteSeccion(3)">
+                        <span>Siguiente</span><i data-lucide="arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- SECCIÓN 4 -->
+            <div class="seccion-encuesta" data-seccion="4" style="display:none;">
+                <div class="seccion-titulo-wrap">
+                    <div class="seccion-numero">4</div>
+                    <div>
+                        <h2>Último paso</h2>
+                        <p>Tu comentario nos ayuda a mejorar</p>
+                    </div>
+                </div>
+
+                <div class="pregunta">
+                    <label class="pregunta-label"><span class="pregunta-numero">16.</span> ¿Tienes algún comentario o sugerencia?</label>
+                    <p class="pregunta-nota">Esta pregunta es opcional</p>
+                    <textarea name="comentario" class="pregunta-textarea" rows="5" placeholder="Escribe aquí tu comentario..."></textarea>
+                </div>
+
+                <div class="agradecimiento-previo">
+                    <i data-lucide="heart"></i>
+                    <p>¡Gracias por tu tiempo! Tus respuestas son muy valiosas para nosotros.</p>
+                </div>
+
+                <div class="seccion-navegacion">
+                    <button type="button" class="btn-seccion btn-anterior" onclick="seccionAnterior(4)">
+                        <i data-lucide="arrow-left"></i><span>Anterior</span>
+                    </button>
+                    <button type="submit" class="btn-seccion btn-enviar">
+                        <i data-lucide="send"></i><span>Enviar respuestas</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <!-- ÉXITO -->
+        <div class="card encuesta-exito" id="exitoCard" style="display:none;">
+            <div class="exito-icono">
+                <i data-lucide="check-circle-2"></i>
+            </div>
+            <h1>¡Gracias por participar!</h1>
+            <p class="exito-mensaje">Tus respuestas fueron registradas correctamente. Con tu ayuda estamos construyendo un mejor AireLab para Navojoa.</p>
+            
+            <div class="exito-comprobante">
+                <i data-lucide="file-check"></i>
+                <div>
+                    <span class="comprobante-label">Tu número de comprobante</span>
+                    <strong id="idEncuesta">ENC-0000</strong>
+                </div>
+            </div>
+            
+            <div class="exito-acciones">
+                <a href="/" class="btn-principal">
+                    <i data-lucide="home"></i><span>Volver al inicio</span>
+                </a>
+                <a href="/alertas" class="btn-secundario">
+                    <i data-lucide="bell"></i><span>Suscribirme a alertas</span>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <footer class="footer">
+        <div class="footer-contenido">
+            <i data-lucide="wind"></i>
+            <p><strong>AireLab</strong> © 2026 · analizando lo invisible</p>
+        </div>
+        <p>Monitoreo ciudadano · Navojoa, Sonora</p>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+
+    <script>
+        const temaGuardado = localStorage.getItem('airelabTema') || 'claro';
+        document.documentElement.setAttribute('data-tema', temaGuardado);
+
+        function cambiarTema() {
+            const t = document.documentElement.getAttribute('data-tema');
+            const nuevo = t === 'claro' ? 'oscuro' : 'claro';
+            document.documentElement.setAttribute('data-tema', nuevo);
+            localStorage.setItem('airelabTema', nuevo);
+        }
+
+        lucide.createIcons();
+
+        function iniciarEncuesta() {
+            document.getElementById('introCard').style.display = 'none';
+            document.getElementById('encuestaForm').style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            lucide.createIcons();
+        }
+
+        function actualizarProgreso(seccion) {
+            const porcentaje = (seccion / 4) * 100;
+            document.getElementById('progresoBarra').style.width = porcentaje + '%';
+            document.getElementById('progresoTexto').textContent = `Sección ${seccion} de 4`;
+            document.getElementById('progresoPorcentaje').textContent = Math.round(porcentaje) + '%';
+        }
+
+        function siguienteSeccion(actual) {
+            const seccionActual = document.querySelector(`[data-seccion="${actual}"]`);
+            const camposRequeridos = seccionActual.querySelectorAll('[required]');
+            
+            for (const campo of camposRequeridos) {
+                if (campo.type === 'radio') {
+                    const grupo = document.getElementsByName(campo.name);
+                    const alguienMarcado = Array.from(grupo).some(r => r.checked);
+                    if (!alguienMarcado) {
+                        alert('Por favor responde todas las preguntas antes de continuar.');
+                        return;
+                    }
+                } else if (!campo.value) {
+                    alert('Por favor responde todas las preguntas antes de continuar.');
+                    campo.focus();
+                    return;
+                }
+            }
+
+            seccionActual.style.display = 'none';
+            document.querySelector(`[data-seccion="${actual + 1}"]`).style.display = 'block';
+            actualizarProgreso(actual + 1);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            lucide.createIcons();
+        }
+
+        function seccionAnterior(actual) {
+            document.querySelector(`[data-seccion="${actual}"]`).style.display = 'none';
+            document.querySelector(`[data-seccion="${actual - 1}"]`).style.display = 'block';
+            actualizarProgreso(actual - 1);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            lucide.createIcons();
+        }
+
+        async function enviarEncuesta(event) {
+            event.preventDefault();
+            const formData = new FormData(event.target);
+            const datos = {};
+            
+            formData.forEach((value, key) => {
+                if (datos[key]) {
+                    if (!Array.isArray(datos[key])) datos[key] = [datos[key]];
+                    datos[key].push(value);
+                } else {
+                    datos[key] = value;
+                }
+            });
+
+            try {
+                const respuesta = await fetch('/procesar-encuesta', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(datos)
+                });
+                
+                const resultado = await respuesta.json();
+                
+                if (resultado.exito) {
+                    if (resultado.id) {
+                        document.getElementById('idEncuesta').textContent = resultado.id;
+                    }
+                    document.getElementById('encuestaForm').style.display = 'none';
+                    document.getElementById('exitoCard').style.display = 'block';
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    lucide.createIcons();
+                } else {
+                    alert('Hubo un error al enviar. Intenta de nuevo.');
+                }
+            } catch (error) {
+                alert('Error de conexión. Verifica tu internet.');
+                console.error(error);
+            }
+        }
+    </script>
+
+</body>
+</html>

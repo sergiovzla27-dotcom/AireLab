@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="claro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a5f6f">
+    <title>Panel de Admin - AireLab</title>
+    
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.png') }}">
+
+{% if not autenticado %}
+
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: linear-gradient(135deg, #1a5f6f 0%, #4a9ba8 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    
+    .login-card {
+        background: #ffffff;
+        border-radius: 20px;
+        padding: 40px 32px;
+        max-width: 420px;
+        width: 100%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    
+    .login-icono-shield {
+        width: 80px;
+        height: 80px;
+        background: linear-gradient(135deg, #1a5f6f, #4a9ba8);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 24px;
+        box-shadow: 0 8px 20px rgba(26, 95, 111, 0.3);
+    }
+    
+    .login-icono-shield svg {
+        width: 40px;
+        height: 40px;
+        color: white;
+    }
+    
+    .login-card h1 {
+        text-align: center;
+        font-size: 1.6em;
+        font-weight: 700;
+        color: #1f2937;
+        margin: 0 0 6px 0;
+    }
+    
+    .login-subtitulo {
+        text-align: center;
+        color: #6b7280;
+        font-size: 0.9em;
+        margin: 0 0 28px 0;
+    }
+    
+    .login-error {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid #ef4444;
+        color: #ef4444;
+        padding: 12px 14px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        font-size: 0.9em;
+    }
+    
+    .login-error svg {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+    }
+    
+    .login-form {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    
+    .campo-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.9em;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 8px;
+    }
+    
+    .campo-label svg {
+        width: 18px;
+        height: 18px;
+        color: #1a5f6f;
+    }
+    
+    .campo-input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 1px solid #e5e7eb;
+        border-radius: 10px;
+        background: #f9fbfb;
+        color: #1f2937;
+        font-size: 0.95em;
+        font-family: inherit;
+        transition: all 0.2s ease;
+    }
+    
+    .campo-input:focus {
+        outline: none;
+        border-color: #1a5f6f;
+        box-shadow: 0 0 0 3px rgba(26, 95, 111, 0.15);
+        background: #ffffff;
+    }
+    
+    .btn-login {
+        background: #1a5f6f;
+        color: white;
+        border: none;
+        padding: 14px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.95em;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        transition: all 0.2s ease;
+        margin-top: 8px;
+        font-family: inherit;
+        width: 100%;
+    }
+    
+    .btn-login svg {
+        width: 20px;
+        height: 20px;
+    }
+    
+    .btn-login:hover {
+        background: #154d5b;
+        transform: translateY(-1px);
+        box-shadow: 0 8px 20px rgba(26, 95, 111, 0.3);
+    }
+    
+    .login-volver {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        color: #6b7280;
+        text-decoration: none;
+        font-size: 0.9em;
+        padding: 10px;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+    }
+    
+    .login-volver svg {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .login-volver:hover {
+        background: #f1f5f6;
+        color: #1f2937;
+    }
+</style>
+
+</head>
+<body>
+
+    <div class="login-card">
+        <div class="login-icono-shield">
+            <i data-lucide="shield-check"></i>
+        </div>
+        <h1>Panel de Admin</h1>
+        <p class="login-subtitulo">Acceso restringido para administradores</p>
+
+        {% if error %}
+        <div class="login-error">
+            <i data-lucide="alert-circle"></i>
+            <span>{{ error }}</span>
+        </div>
+        {% endif %}
+
+        <form method="POST" class="login-form">
+            <div>
+                <label class="campo-label">
+                    <i data-lucide="user"></i>
+                    <span>Usuario</span>
+                </label>
+                <input type="text" name="usuario" class="campo-input" placeholder="admin" required autofocus>
+            </div>
+
+            <div>
+                <label class="campo-label">
+                    <i data-lucide="lock"></i>
+                    <span>Contraseña</span>
+                </label>
+                <input type="password" name="password" class="campo-input" placeholder="••••••" required>
+            </div>
+
+            <button type="submit" class="btn-login">
+                <i data-lucide="log-in"></i>
+                <span>Entrar al panel</span>
+            </button>
+        </form>
+
+        <a href="/" class="login-volver">
+            <i data-lucide="arrow-left"></i>
+            <span>Volver al sitio</span>
+        </a>
+    </div>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script>lucide.createIcons();</script>
+
+{% else %}
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/stats.css') }}">
+
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo-area">
+            <div class="logo-circulo">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="AireLab">
+            </div>
+            <div class="logo-text">
+                <div class="logo-nombre">AireLab Admin</div>
+                <div class="logo-slogan">Panel de investigación</div>
+            </div>
+        </div>
+        
+        <div class="header-acciones">
+            <a href="/" target="_blank" class="nav-link-simple">
+                <i data-lucide="external-link"></i>
+                <span>Ver sitio</span>
+            </a>
+            <a href="/admin/logout" class="btn-logout">
+                <i data-lucide="log-out"></i>
+                <span>Cerrar sesión</span>
+            </a>
+            <button class="tema-switch" onclick="cambiarTema()">
+                <i data-lucide="moon" class="tema-icono-claro"></i>
+                <i data-lucide="sun" class="tema-icono-oscuro"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        {% if alerta_automatica %}
+            {% if alerta_automatica.enviado %}
+            <div class="auto-alerta auto-alerta-exito">
+                <div class="auto-alerta-icono">
+                    <i data-lucide="zap"></i>
+                </div>
+                <div class="auto-alerta-contenido">
+                    <strong>Sistema automático activado</strong>
+                    <span>Se enviaron <b>{{ alerta_automatica.alertas_enviadas }}</b> alerta(s) por correo según las preferencias de cada suscriptor. Aire actual: <b>{{ alerta_automatica.nivel_texto }}</b> ({{ alerta_automatica.pm25 }} µg/m³)</span>
+                </div>
+            </div>
+            {% else %}
+            <div class="auto-alerta auto-alerta-info">
+                <div class="auto-alerta-icono">
+                    <i data-lucide="shield-check"></i>
+                </div>
+                <div class="auto-alerta-contenido">
+                    <strong>Sistema automático activo</strong>
+                    <span>{{ alerta_automatica.razon }}</span>
+                </div>
+            </div>
+       {% endif %}
+        {% endif %}
+
+        {% if stats.exito %}
+
+        <div class="stats-grid-principal">
+            <div class="stat-card stat-card-grande">
+                <div class="stat-icono primario">
+                    <i data-lucide="clipboard-list"></i>
+                </div>
+                <div class="stat-numero">{{ stats.total_respuestas }}</div>
+                <div class="stat-label">Encuestas respondidas</div>
+                <div class="stat-detalle">Última: {{ stats.ultima_respuesta }}</div>
+            </div>
+
+            <div class="stat-card stat-card-grande">
+                <div class="stat-icono secundario">
+                    <i data-lucide="bell-ring"></i>
+                </div>
+                <div class="stat-numero">{{ stats.total_suscriptores }}</div>
+                <div class="stat-label">Suscriptores activos</div>
+                <div class="stat-detalle">Reciben alertas</div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header-stats">
+                <i data-lucide="trending-up"></i>
+                <div>
+                    <h2>Resumen de hallazgos</h2>
+                    <p>Métricas clave de la investigación</p>
+                </div>
+            </div>
+
+            <div class="hallazgos-grid">
+                <div class="hallazgo-card hallazgo-rojo">
+                    <span class="hallazgo-pct">{{ stats.porcentajes.con_sintomas }}%</span>
+                    <div class="hallazgo-icono">
+                        <i data-lucide="activity"></i>
+                    </div>
+                    <span class="hallazgo-label">Con síntomas</span>
+                </div>
+
+                <div class="hallazgo-card hallazgo-naranja">
+                    <span class="hallazgo-pct">{{ stats.porcentajes.visitaron_medico }}%</span>
+                    <div class="hallazgo-icono">
+                        <i data-lucide="stethoscope"></i>
+                    </div>
+                    <span class="hallazgo-label">Visitaron médico</span>
+                </div>
+
+                <div class="hallazgo-card hallazgo-verde">
+                    <span class="hallazgo-pct">{{ stats.porcentajes.usarian_app }}%</span>
+                    <div class="hallazgo-icono">
+                        <i data-lucide="smartphone"></i>
+                    </div>
+                    <span class="hallazgo-label">Usarían app</span>
+                </div>
+
+                <div class="hallazgo-card hallazgo-azul">
+                    <span class="hallazgo-pct">{{ stats.porcentajes.recomendarian }}%</span>
+                    <div class="hallazgo-icono">
+                        <i data-lucide="heart"></i>
+                    </div>
+                    <span class="hallazgo-label">Recomendarían</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-graficas-2">
+            <div class="card">
+                <div class="card-header-stats">
+                    <i data-lucide="pie-chart"></i>
+                    <div>
+                        <h2>Distribución por edad</h2>
+                    </div>
+                </div>
+                {% if stats.distribucion_edad and stats.distribucion_edad.values()|sum >= 3 %}
+                <div class="grafica-contenedor-mediano">
+                    <canvas id="graficaEdad"></canvas>
+                </div>
+                {% else %}
+                <div class="grafica-vacia-admin">
+                    <i data-lucide="bar-chart-3"></i>
+                    <h3>Datos insuficientes</h3>
+                    <p>Se necesitan al menos 3 respuestas. Llevas {{ stats.total_respuestas }}.</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div class="card">
+                <div class="card-header-stats">
+                    <i data-lucide="briefcase"></i>
+                    <div>
+                        <h2>Por ocupación</h2>
+                    </div>
+                </div>
+                {% if stats.ocupaciones and stats.ocupaciones.values()|sum >= 3 %}
+                <div class="grafica-contenedor-mediano">
+                    <canvas id="graficaOcupacion"></canvas>
+                </div>
+                {% else %}
+                <div class="grafica-vacia-admin">
+                    <i data-lucide="briefcase"></i>
+                    <h3>Datos insuficientes</h3>
+                    <p>Se necesitan al menos 3 respuestas. Llevas {{ stats.total_respuestas }}.</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header-stats">
+                <i data-lucide="calendar-x"></i>
+                <div>
+                    <h2>Análisis temporal de enfermedades</h2>
+                    <p>Datos clave para correlacionar con PM2.5</p>
+                </div>
+            </div>
+            {% if stats.meses_enfermos and stats.meses_enfermos.values()|sum >= 3 %}
+            <div class="grafica-contenedor-grande">
+                <canvas id="graficaMeses"></canvas>
+            </div>
+            {% else %}
+            <div class="grafica-vacia-admin">
+                <i data-lucide="calendar-x"></i>
+                <h3>Datos insuficientes</h3>
+                <p>Esta es la gráfica más importante para correlacionar contaminación con enfermedades. Necesita más respuestas.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <div class="card-header-stats">
+                <i data-lucide="layers"></i>
+                <div>
+                    <h2>Funciones más solicitadas</h2>
+                    <p>Qué quieren los usuarios en la app</p>
+                </div>
+            </div>
+            {% if stats.funciones_deseadas and stats.funciones_deseadas.values()|sum >= 3 %}
+            <div class="grafica-contenedor-mediano">
+                <canvas id="graficaFunciones"></canvas>
+            </div>
+            {% else %}
+            <div class="grafica-vacia-admin">
+                <i data-lucide="layers"></i>
+                <h3>Datos insuficientes</h3>
+                <p>Se necesitan al menos 3 respuestas para mostrar las funciones más populares.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <div class="card-header-stats">
+                <i data-lucide="table"></i>
+                <div>
+                    <h2>Todas las respuestas</h2>
+                    <p>Datos brutos de la encuesta</p>
+                </div>
+            </div>
+            
+            {% if stats.tabla_encuestas %}
+            <div class="tabla-contenedor">
+                <table class="tabla-admin">
+                    <thead>
+                        <tr>
+                            {% for columna in stats.tabla_encuestas[0].keys() %}
+                            <th>{{ columna }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fila in stats.tabla_encuestas %}
+                        <tr>
+                            {% for valor in fila.values() %}
+                            <td>{{ valor }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="tabla-vacia">
+                <i data-lucide="inbox"></i>
+                <p>Aún no hay encuestas respondidas</p>
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            <div class="card-header-stats card-header-con-accion">
+                <div class="header-titulo-grupo">
+                    <i data-lucide="users"></i>
+                    <div>
+                        <h2>Suscriptores activos</h2>
+                        <p>Personas registradas para recibir alertas</p>
+                    </div>
+                </div>
+                <button id="btnEnviarAlertas" class="btn-enviar-alertas" onclick="enviarAlertas()">
+                    <i data-lucide="send"></i>
+                    <span>Enviar alerta a todos</span>
+                </button>
+            </div>
+            
+            {% if stats.tabla_suscriptores %}
+            <div class="tabla-contenedor">
+                <table class="tabla-admin">
+                    <thead>
+                        <tr>
+                            {% for columna in stats.tabla_suscriptores[0].keys() %}
+                            <th>{{ columna }}</th>
+                            {% endfor %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fila in stats.tabla_suscriptores %}
+                        <tr>
+                            {% for valor in fila.values() %}
+                            <td>{{ valor }}</td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="tabla-vacia">
+                <i data-lucide="inbox"></i>
+                <p>Aún no hay suscriptores</p>
+            </div>
+            {% endif %}
+        </div>
+
+        {% else %}
+        <div class="card stats-vacio">
+            <div class="vacio-icono">
+                <i data-lucide="inbox"></i>
+            </div>
+            <h2>Sin datos para mostrar</h2>
+            <p>Aún no hay encuestas ni suscriptores registrados.</p>
+        </div>
+        {% endif %}
+
+    </div>
+<!-- Modal de resultado de alertas -->
+    <div id="modalAlertas" class="modal-alertas-overlay">
+        <div class="modal-alertas-contenido">
+            <div id="modalAlertasIcono" class="modal-alertas-icono">
+                <i data-lucide="loader" id="iconoLoader"></i>
+            </div>
+            <h2 id="modalAlertasTitulo">Enviando alertas...</h2>
+            <p id="modalAlertasMensaje">Por favor espera un momento</p>
+            
+            <div id="modalAlertasResultados" class="modal-alertas-resultados" style="display: none;">
+                <div class="resultado-item">
+                    <i data-lucide="users" class="resultado-icono-azul"></i>
+                    <div>
+                        <strong id="totalSuscriptores">0</strong>
+                        <span>Suscriptores</span>
+                    </div>
+                </div>
+                <div class="resultado-item">
+                    <i data-lucide="mail-check" class="resultado-icono-verde"></i>
+                    <div>
+                        <strong id="emailsExitosos">0</strong>
+                        <span>Correos enviados</span>
+                    </div>
+                </div>
+                <div class="resultado-item" id="resultadoEmailFallidos" style="display: none;">
+                    <i data-lucide="mail-x" class="resultado-icono-rojo"></i>
+                    <div>
+                        <strong id="emailsFallidos">0</strong>
+                        <span>Correos fallidos</span>
+                    </div>
+                </div>
+                <div class="resultado-item" id="resultadoWhatsappOk" style="display: none;">
+                    <i data-lucide="message-circle" class="resultado-icono-verde"></i>
+                    <div>
+                        <strong id="whatsappExitosos">0</strong>
+                        <span>WhatsApp enviados</span>
+                    </div>
+                </div>
+            </div>
+            
+            <button id="btnCerrarModal" class="btn-cerrar-modal" onclick="cerrarModalAlertas()" style="display: none;">
+                <i data-lucide="check"></i>
+                <span>Entendido</span>
+            </button>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-contenido">
+            <i data-lucide="shield"></i>
+            <p><strong>AireLab Admin</strong> · Panel de investigación</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const temaGuardado = localStorage.getItem('airelabTema') || 'oscuro';
+        document.documentElement.setAttribute('data-tema', temaGuardado);
+
+        function cambiarTema() {
+            const t = document.documentElement.getAttribute('data-tema');
+            const nuevo = t === 'claro' ? 'oscuro' : 'claro';
+            document.documentElement.setAttribute('data-tema', nuevo);
+            localStorage.setItem('airelabTema', nuevo);
+        }
+
+        lucide.createIcons();
+
+        {% if stats.exito %}
+        const colores = {
+            primario: '#1a5f6f', secundario: '#4a9ba8', terciario: '#7fb8bf',
+            verde: '#10b981', amarillo: '#eab308', naranja: '#f97316',
+            rojo: '#ef4444', morado: '#a855f7'
+        };
+
+        const opcionesComun = {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { padding: 15, font: { size: 12 } } }
+            }
+        };
+
+        const datosEdad = {{ stats.distribucion_edad | tojson }};
+        if (Object.keys(datosEdad).length > 0 && Object.values(datosEdad).reduce((a,b)=>a+b,0) >= 3) {
+            const ctxE = document.getElementById('graficaEdad');
+            if (ctxE) {
+                new Chart(ctxE, {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(datosEdad),
+                        datasets: [{
+                            data: Object.values(datosEdad),
+                            backgroundColor: [colores.primario, colores.secundario, colores.terciario, colores.verde, colores.amarillo],
+                            borderWidth: 2, borderColor: 'white'
+                        }]
+                    },
+                    options: opcionesComun
+                });
+            }
+        }
+
+        const datosOcup = {{ stats.ocupaciones | tojson }};
+        if (Object.keys(datosOcup).length > 0 && Object.values(datosOcup).reduce((a,b)=>a+b,0) >= 3) {
+            const ctxO = document.getElementById('graficaOcupacion');
+            if (ctxO) {
+                new Chart(ctxO, {
+                    type: 'pie',
+                    data: {
+                        labels: Object.keys(datosOcup),
+                        datasets: [{
+                            data: Object.values(datosOcup),
+                            backgroundColor: [colores.primario, colores.secundario, colores.terciario, colores.amarillo],
+                            borderWidth: 2, borderColor: 'white'
+                        }]
+                    },
+                    options: opcionesComun
+                });
+            }
+        }
+
+        const datosMeses = {{ stats.meses_enfermos | tojson }};
+        if (Object.keys(datosMeses).length > 0 && Object.values(datosMeses).reduce((a,b)=>a+b,0) >= 3) {
+            const ctxM = document.getElementById('graficaMeses');
+            if (ctxM) {
+                new Chart(ctxM, {
+                    type: 'line',
+                    data: {
+                        labels: Object.keys(datosMeses),
+                        datasets: [{
+                            label: 'Personas enfermas',
+                            data: Object.values(datosMeses),
+                            borderColor: colores.rojo,
+                            backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                            borderWidth: 3, tension: 0.4, fill: true,
+                            pointRadius: 6,
+                            pointBackgroundColor: colores.rojo,
+                            pointBorderColor: 'white', pointBorderWidth: 2
+                        }]
+                    },
+                    options: {
+                        ...opcionesComun,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                    }
+                });
+            }
+        }
+
+        const datosFunc = {{ stats.funciones_deseadas | tojson }};
+        if (Object.keys(datosFunc).length > 0 && Object.values(datosFunc).reduce((a,b)=>a+b,0) >= 3) {
+            const ctxF = document.getElementById('graficaFunciones');
+            if (ctxF) {
+                new Chart(ctxF, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(datosFunc),
+                        datasets: [{
+                            label: 'Solicitudes',
+                            data: Object.values(datosFunc),
+                            backgroundColor: colores.secundario,
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        ...opcionesComun,
+                        plugins: { legend: { display: false } }
+                    }
+                });
+            }
+        }
+        // ============================================
+        // ENVIAR ALERTAS A SUSCRIPTORES
+        // ============================================
+        
+        function enviarAlertas() {
+            const confirmacion = confirm(
+                '¿Estás seguro de enviar una alerta a TODOS los suscriptores activos?\n\n' +
+                'Se enviarán correos y/o mensajes de WhatsApp con los datos actuales del aire.'
+            );
+            
+            if (!confirmacion) return;
+            
+            // Mostrar modal de carga
+            const modal = document.getElementById('modalAlertas');
+            const titulo = document.getElementById('modalAlertasTitulo');
+            const mensaje = document.getElementById('modalAlertasMensaje');
+            const icono = document.getElementById('modalAlertasIcono');
+            const resultados = document.getElementById('modalAlertasResultados');
+            const btnCerrar = document.getElementById('btnCerrarModal');
+            const btnEnviar = document.getElementById('btnEnviarAlertas');
+            
+            modal.classList.add('activo');
+            titulo.textContent = 'Enviando alertas...';
+            mensaje.textContent = 'Por favor espera un momento';
+            icono.innerHTML = '<i data-lucide="loader-2" style="animation: spin 1s linear infinite;"></i>';
+            icono.className = 'modal-alertas-icono cargando';
+            resultados.style.display = 'none';
+            btnCerrar.style.display = 'none';
+            btnEnviar.disabled = true;
+            
+            lucide.createIcons();
+            
+            // Llamar al endpoint
+            fetch('/api/enviar-alertas', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                btnEnviar.disabled = false;
+                
+                if (data.error) {
+                    // Error
+                    titulo.textContent = 'Error al enviar';
+                    mensaje.textContent = data.error;
+                    icono.innerHTML = '<i data-lucide="alert-circle"></i>';
+                    icono.className = 'modal-alertas-icono error';
+                } else if (!data.exito) {
+                    // Sin suscriptores
+                    titulo.textContent = 'Sin suscriptores';
+                    mensaje.textContent = data.mensaje || 'No hay suscriptores activos';
+                    icono.innerHTML = '<i data-lucide="info"></i>';
+                    icono.className = 'modal-alertas-icono info';
+                } else {
+                    // Éxito
+                    titulo.textContent = '¡Alertas enviadas!';
+                    mensaje.textContent = 'Las notificaciones se procesaron correctamente';
+                    icono.innerHTML = '<i data-lucide="check-circle"></i>';
+                    icono.className = 'modal-alertas-icono exito';
+                    
+                    // Mostrar números
+                    document.getElementById('totalSuscriptores').textContent = data.total_suscriptores;
+                    document.getElementById('emailsExitosos').textContent = data.emails_exitosos;
+                    document.getElementById('emailsFallidos').textContent = data.emails_fallidos;
+                    document.getElementById('whatsappExitosos').textContent = data.whatsapp_exitosos;
+                    
+                    if (data.emails_fallidos > 0) {
+                        document.getElementById('resultadoEmailFallidos').style.display = 'flex';
+                    }
+                    
+                    if (data.whatsapp_exitosos > 0) {
+                        document.getElementById('resultadoWhatsappOk').style.display = 'flex';
+                    }
+                    
+                    resultados.style.display = 'grid';
+                }
+                
+                btnCerrar.style.display = 'inline-flex';
+                lucide.createIcons();
+            })
+            .catch(error => {
+                btnEnviar.disabled = false;
+                titulo.textContent = 'Error de conexión';
+                mensaje.textContent = 'No se pudo conectar con el servidor';
+                icono.innerHTML = '<i data-lucide="wifi-off"></i>';
+                icono.className = 'modal-alertas-icono error';
+                btnCerrar.style.display = 'inline-flex';
+                lucide.createIcons();
+            });
+        }
+        
+        function cerrarModalAlertas() {
+            document.getElementById('modalAlertas').classList.remove('activo');
+        }
+
+        {% endif %}
+    </script>
+
+{% endif %}
+
+</body>
+</html>

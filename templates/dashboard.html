@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="claro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a5f6f">
+    <title>AireLab - Analizando lo invisible | Navojoa</title>
+    
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+
+    <!-- MODAL DE BIENVENIDA -->
+    <div class="modal-overlay" id="modalBienvenida">
+        <div class="modal">
+            <button class="modal-close" onclick="cerrarModal()">
+                <i data-lucide="x"></i>
+            </button>
+            <div class="modal-logo-circulo">
+                <i data-lucide="wind"></i>
+            </div>
+            <h2>¡Hola! Bienvenido a AireLab</h2>
+            <p class="modal-subtitle"><em>analizando lo invisible</em></p>
+            
+            <p class="modal-descripcion">
+                Te ayudamos a cuidar tu salud y la de tu familia. Aquí puedes ver cómo está el aire en Navojoa en tiempo real y recibir avisos cuando no sea seguro salir.
+            </p>
+            
+            <div class="modal-info-box">
+                <strong>¿Sabías que...?</strong>
+                <p>Hay partículas tan pequeñas en el aire que no se ven, pero pueden afectar tu salud al respirarlas. Nosotros te las mostramos y te decimos qué hacer.</p>
+            </div>
+            
+            <button class="modal-btn" onclick="iniciarTour()">
+                <i data-lucide="play-circle"></i>
+                <span>Conocer AireLab paso a paso</span>
+            </button>
+            <button class="modal-btn-secundario" onclick="cerrarModal()">
+                Explorar por mi cuenta
+            </button>
+        </div>
+    </div>
+
+    <!-- TOUR INTERACTIVO -->
+    <div class="tour-overlay" id="tourOverlay" style="display:none;">
+        <div class="tour-tooltip" id="tourTooltip">
+            <div class="tour-paso-num">Paso <span id="tourPasoNum">1</span> de 5</div>
+            <h3 id="tourTitulo">Titulo</h3>
+            <p id="tourTexto">Texto del tour</p>
+            <div class="tour-botones">
+                <button class="tour-btn-secundario" onclick="cerrarTour()">Saltar</button>
+                <button class="tour-btn-principal" onclick="siguientePaso()">
+                    <span id="tourBtnTexto">Siguiente</span>
+                    <i data-lucide="arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="logo-area">
+            <div class="logo-circulo">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="AireLab">
+            </div>
+            <div class="logo-text">
+                <div class="logo-nombre">AireLab</div>
+                <div class="logo-slogan">analizando lo invisible</div>
+            </div>
+        </div>
+        
+        <div class="header-acciones">
+            <nav class="nav-links">
+                <a href="/" class="active">
+                    <i data-lucide="home"></i>
+                    <span>Inicio</span>
+                </a>
+                <a href="/encuesta">
+                    <i data-lucide="clipboard-list"></i>
+                    <span>Encuesta</span>
+                </a>
+                <a href="/alertas">
+                    <i data-lucide="bell"></i>
+                    <span>Alertas</span>
+                </a>
+                <a href="/resultados">
+                    <i data-lucide="bar-chart-3"></i>
+                    <span>Resultados</span>
+                </a>
+                <a href="/sobre">
+                    <i data-lucide="info"></i>
+                    <span>Sobre</span>
+                </a>
+            </nav>
+            
+            <button class="tema-switch" onclick="cambiarTema()" title="Cambiar tema">
+                <i data-lucide="moon" class="tema-icono-claro"></i>
+                <i data-lucide="sun" class="tema-icono-oscuro"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        {% if datos.exito %}
+
+        <!-- CARD PRINCIPAL: MENSAJE CÁLIDO -->
+        <div class="card card-mensaje-principal nivel-{{ datos.nivel.color }}" id="seccionAQI">
+            <div class="mensaje-contenido">
+                <div class="mensaje-icono">
+                    <i data-lucide="{{ datos.nivel.icono }}"></i>
+                </div>
+                <div class="mensaje-texto">
+                    <h1>{{ datos.nivel.mensaje_calido }}</h1>
+                    <p class="mensaje-fecha">
+                        <i data-lucide="map-pin"></i>
+                        <span>Navojoa, Sonora · {{ datos.fecha }}</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Grid principal: AQI + Recomendaciones -->
+        <div class="grid-principal">
+            
+            <!-- Card AQI con círculo -->
+            <div class="card card-aqi-circle nivel-{{ datos.nivel.color }}">
+                <div class="card-con-ayuda">
+                    <div class="aqi-titulo">Nivel del aire ahora</div>
+                    <button class="btn-ayuda" onclick="abrirAyuda('pm25')" title="¿Qué significa?">
+                        <i data-lucide="help-circle"></i>
+                    </button>
+                </div>
+                
+                <div class="circulo-aqi">
+                    <div class="circulo-numero">{{ datos.pm2_5|round|int }}</div>
+                    <div class="circulo-label">PM2.5</div>
+                </div>
+                
+                <div class="nivel-badge">{{ datos.nivel.texto }}</div>
+                
+                <div class="aqi-barra-simple">
+                    <div class="barra-medidor">
+                        <div class="indicador" style="left: {{ [datos.pm2_5 / 200 * 100, 98]|min }}%;"></div>
+                    </div>
+                    <div class="etiquetas-barra">
+                        <span>Limpio</span>
+                        <span>Aceptable</span>
+                        <span>Dañino</span>
+                        <span>Peligro</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card Recomendaciones -->
+            <div class="card card-recomendaciones" id="seccionRecomendaciones">
+                <div class="rec-header">
+                    <div class="rec-icono-wrap nivel-{{ datos.nivel.color }}-bg">
+                        <i data-lucide="lightbulb"></i>
+                    </div>
+                    <h2>{{ datos.recomendaciones.titulo }}</h2>
+                </div>
+
+                <div class="rec-bloque">
+                    <div class="rec-bloque-header">
+                        <i data-lucide="users"></i>
+                        <strong>{{ datos.recomendaciones.poblacion_general.titulo }}</strong>
+                    </div>
+                    <p>{{ datos.recomendaciones.poblacion_general.texto }}</p>
+                </div>
+
+                <div class="rec-bloque">
+                    <div class="rec-bloque-header">
+                        <i data-lucide="heart-pulse"></i>
+                        <strong>{{ datos.recomendaciones.grupos_sensibles.titulo }}</strong>
+                    </div>
+                    <p>{{ datos.recomendaciones.grupos_sensibles.texto }}</p>
+                </div>
+
+                <div class="rec-info-box">
+                    <i data-lucide="info"></i>
+                    <div>
+                        <strong>¿Quiénes son los más sensibles?</strong>
+                        <p>{{ datos.recomendaciones.grupos_incluidos }}</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Gráfica histórica -->
+        <div class="card" id="seccionGrafica">
+            <div class="card-header-completo">
+                <div>
+                    <h2>¿Cómo ha estado el aire hoy?</h2>
+                    <p class="card-subtitulo">Mira cómo cambió en las últimas 24 horas</p>
+                </div>
+                <button class="btn-ayuda" onclick="abrirAyuda('grafica')" title="¿Cómo leer esta gráfica?">
+                    <i data-lucide="help-circle"></i>
+                </button>
+            </div>
+            <div class="grafica-contenedor">
+                <canvas id="graficaHistorica"></canvas>
+            </div>
+        </div>
+
+        <!-- Mapa -->
+        <div class="card card-mapa-real" id="seccionMapa">
+            <div class="card-header-simple">
+                <div class="titulo-con-icono">
+                    <i data-lucide="map-pin"></i>
+                    <div>
+                        <h2>Tu ubicación: Navojoa</h2>
+                        <p class="card-subtitulo">Estos son los datos del aire en tu ciudad</p>
+                    </div>
+                </div>
+            </div>
+            <div id="mapa"></div>
+        </div>
+
+        <!-- Otros contaminantes -->
+        <div class="card" id="seccionContaminantes">
+            <div class="card-header-completo">
+                <div>
+                    <h2>Otras cosas en el aire</h2>
+                    <p class="card-subtitulo">Además del PM2.5, medimos otros gases</p>
+                </div>
+                <button class="btn-ayuda" onclick="abrirAyuda('contaminantes')" title="¿Qué son estos?">
+                    <i data-lucide="help-circle"></i>
+                </button>
+            </div>
+            <div class="grid-contaminantes">
+                <div class="contaminante" onclick="abrirAyuda('pm10')">
+                    <div class="contaminante-label">PM10</div>
+                    <div class="contaminante-numero nivel-{{ datos.nivel.color }}-text">{{ datos.pm10 }}</div>
+                    <div class="contaminante-unit">Polvo</div>
+                </div>
+                <div class="contaminante" onclick="abrirAyuda('co')">
+                    <div class="contaminante-label">CO</div>
+                    <div class="contaminante-numero nivel-verde-text">{{ datos.co }}</div>
+                    <div class="contaminante-unit">Autos</div>
+                </div>
+                <div class="contaminante" onclick="abrirAyuda('no2')">
+                    <div class="contaminante-label">NO₂</div>
+                    <div class="contaminante-numero nivel-verde-text">{{ datos.no2 }}</div>
+                    <div class="contaminante-unit">Tráfico</div>
+                </div>
+                <div class="contaminante" onclick="abrirAyuda('o3')">
+                    <div class="contaminante-label">O₃</div>
+                    <div class="contaminante-numero nivel-amarillo-text">{{ datos.o3 }}</div>
+                    <div class="contaminante-unit">Ozono</div>
+                </div>
+                <div class="contaminante" onclick="abrirAyuda('so2')">
+                    <div class="contaminante-label">SO₂</div>
+                    <div class="contaminante-numero nivel-verde-text">{{ datos.so2 }}</div>
+                    <div class="contaminante-unit">Industria</div>
+                </div>
+            </div>
+            <p class="contaminantes-nota">
+                <i data-lucide="mouse-pointer-click"></i>
+                <span>Haz clic en cada uno para saber qué es</span>
+            </p>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- MINI RESULTADOS DE LA INVESTIGACION          -->
+        <!-- ============================================ -->
+        {% if stats and stats.exito and stats.total_respuestas > 0 %}
+        <div class="card mini-resultados-card">
+            <div class="mini-resultados-header">
+                <div>
+                    <div class="mini-titulo-icono">
+                        <i data-lucide="bar-chart-3"></i>
+                        <h2>¿Qué piensan los habitantes de Navojoa?</h2>
+                    </div>
+                    <p class="mini-subtitulo">Resumen de las respuestas que llevamos hasta ahora</p>
+                </div>
+            </div>
+
+            <div class="mini-stats-grid">
+                <div class="mini-stat">
+                    <div class="mini-stat-icono">
+                        <i data-lucide="users"></i>
+                    </div>
+                    <div class="mini-stat-numero">{{ stats.total_respuestas }}</div>
+                    <div class="mini-stat-label">Personas participaron</div>
+                </div>
+
+                <div class="mini-stat">
+                    <div class="mini-stat-icono" style="background: rgba(239, 68, 68, 0.15);">
+                        <i data-lucide="activity" style="color: var(--accent-rojo);"></i>
+                    </div>
+                    <div class="mini-stat-numero" style="color: var(--accent-rojo);">{{ stats.porcentajes.con_sintomas }}%</div>
+                    <div class="mini-stat-label">Con síntomas respiratorios</div>
+                </div>
+
+                <div class="mini-stat">
+                    <div class="mini-stat-icono" style="background: rgba(16, 185, 129, 0.15);">
+                        <i data-lucide="smartphone" style="color: var(--accent-verde);"></i>
+                    </div>
+                    <div class="mini-stat-numero" style="color: var(--accent-verde);">{{ stats.porcentajes.usarian_app }}%</div>
+                    <div class="mini-stat-label">Usarían AireLab</div>
+                </div>
+            </div>
+
+            <a href="/resultados" class="mini-resultados-btn">
+                <span>Ver todos los resultados</span>
+                <i data-lucide="arrow-right"></i>
+            </a>
+        </div>
+        {% endif %}
+
+        <!-- CTA Alertas -->
+        <div class="card card-cta" id="seccionCTA">
+            <div class="cta-icono">
+                <i data-lucide="bell-ring"></i>
+            </div>
+            <h2>Recibe avisos cuando el aire esté mal</h2>
+            <p>Te avisamos por WhatsApp o correo cuando sea peligroso salir, así proteges a tu familia.</p>
+            <a href="/alertas" class="btn-principal">
+                <span>Quiero recibir avisos</span>
+                <i data-lucide="arrow-right"></i>
+            </a>
+        </div>
+
+        {% else %}
+        <div class="card">
+            <div class="error-contenido">
+                <i data-lucide="alert-triangle" class="error-icono"></i>
+                <h2>No pudimos conectarnos</h2>
+                <p>{{ datos.error }}</p>
+                <p>Por favor intenta más tarde.</p>
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <footer class="footer">
+        <div class="footer-contenido">
+            <i data-lucide="wind"></i>
+            <p><strong>AireLab</strong> © 2026 · analizando lo invisible</p>
+        </div>
+        <p>Monitoreo ciudadano · Navojoa, Sonora</p>
+    </footer>
+
+    <!-- BOTÓN DE AYUDA FLOTANTE -->
+    <button class="btn-ayuda-flotante" onclick="abrirAyuda('general')" title="¿Necesitas ayuda?">
+        <i data-lucide="help-circle"></i>
+    </button>
+
+    <!-- MODAL DE AYUDA -->
+    <div class="modal-overlay" id="modalAyuda" style="display:none;">
+        <div class="modal modal-ayuda">
+            <button class="modal-close" onclick="cerrarAyuda()">
+                <i data-lucide="x"></i>
+            </button>
+            <div class="modal-logo-circulo modal-ayuda-icono">
+                <i data-lucide="help-circle"></i>
+            </div>
+            <h2 id="ayudaTitulo">Ayuda</h2>
+            <div id="ayudaContenido" class="ayuda-contenido"></div>
+            <button class="modal-btn" onclick="cerrarAyuda()">Entendido</button>
+        </div>
+    </div>
+
+    <!-- Librerías -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const temaGuardado = localStorage.getItem('airelabTema') || 'claro';
+        document.documentElement.setAttribute('data-tema', temaGuardado);
+
+        function cambiarTema() {
+            const t = document.documentElement.getAttribute('data-tema');
+            const nuevo = t === 'claro' ? 'oscuro' : 'claro';
+            document.documentElement.setAttribute('data-tema', nuevo);
+            localStorage.setItem('airelabTema', nuevo);
+            if (window.mapaLeaflet) actualizarMapa(nuevo);
+        }
+
+        function cerrarModal() {
+            document.getElementById('modalBienvenida').style.display = 'none';
+            localStorage.setItem('airelabVisitado', 'true');
+        }
+
+        if (localStorage.getItem('airelabVisitado')) {
+            document.getElementById('modalBienvenida').style.display = 'none';
+        }
+
+        const pasosTour = [
+            {
+                selector: '#seccionAQI',
+                titulo: '¿Cómo está el aire?',
+                texto: 'Aquí te decimos en palabras sencillas cómo está el aire ahorita.'
+            },
+            {
+                selector: '#seccionRecomendaciones',
+                titulo: 'Recomendaciones para ti',
+                texto: 'Esta sección te dice qué puedes hacer hoy.'
+            },
+            {
+                selector: '#seccionGrafica',
+                titulo: 'Cómo ha estado hoy',
+                texto: 'Esta gráfica muestra cómo ha estado el aire durante el día.'
+            },
+            {
+                selector: '#seccionContaminantes',
+                titulo: 'Otras cosas en el aire',
+                texto: 'Medimos otros gases también. Haz clic para saber más.'
+            },
+            {
+                selector: '#seccionCTA',
+                titulo: '¡Suscríbete a avisos!',
+                texto: 'Te mandamos mensajes cuando el aire sea peligroso.'
+            }
+        ];
+        
+        let pasoActual = 0;
+
+        function iniciarTour() {
+            document.getElementById('modalBienvenida').style.display = 'none';
+            document.getElementById('tourOverlay').style.display = 'flex';
+            pasoActual = 0;
+            mostrarPaso();
+        }
+
+        function mostrarPaso() {
+            const paso = pasosTour[pasoActual];
+            document.getElementById('tourPasoNum').textContent = pasoActual + 1;
+            document.getElementById('tourTitulo').textContent = paso.titulo;
+            document.getElementById('tourTexto').textContent = paso.texto;
+            document.getElementById('tourBtnTexto').textContent = 
+                pasoActual === pasosTour.length - 1 ? 'Terminar' : 'Siguiente';
+            
+            const elemento = document.querySelector(paso.selector);
+            if (elemento) {
+                elemento.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                elemento.classList.add('tour-highlight');
+                setTimeout(() => {
+                    pasosTour.forEach(p => {
+                        const el = document.querySelector(p.selector);
+                        if (el && p !== paso) el.classList.remove('tour-highlight');
+                    });
+                }, 100);
+            }
+            
+            lucide.createIcons();
+        }
+
+        function siguientePaso() {
+            pasoActual++;
+            if (pasoActual >= pasosTour.length) {
+                cerrarTour();
+            } else {
+                mostrarPaso();
+            }
+        }
+
+        function cerrarTour() {
+            document.getElementById('tourOverlay').style.display = 'none';
+            localStorage.setItem('airelabVisitado', 'true');
+            document.querySelectorAll('.tour-highlight').forEach(el => {
+                el.classList.remove('tour-highlight');
+            });
+        }
+
+        const ayudaContenidos = {
+            'general': {
+                titulo: '¿Cómo uso AireLab?',
+                contenido: '<p><strong>AireLab te ayuda a cuidar tu salud.</strong></p><ul><li><strong>Mira el círculo grande:</strong> te dice cómo está el aire ahora.</li><li><strong>Lee las recomendaciones:</strong> te dicen qué hacer hoy.</li><li><strong>Suscríbete a avisos:</strong> te avisamos cuando sea peligroso.</li></ul>'
+            },
+            'pm25': {
+                titulo: '¿Qué es el PM2.5?',
+                contenido: '<p>Son <strong>partículas tan pequeñas</strong> que no se pueden ver. Vienen del humo, polvo e industrias.</p><p>Son peligrosas porque <strong>entran a tus pulmones al respirar</strong>.</p>'
+            },
+            'pm10': {
+                titulo: '¿Qué es el PM10?',
+                contenido: '<p>Son partículas un poco <strong>más grandes que el PM2.5</strong>. Generalmente es polvo del campo y calles.</p>'
+            },
+            'co': {
+                titulo: '¿Qué es el CO?',
+                contenido: '<p>Es un gas que viene de los <strong>motores de autos y estufas</strong>. No tiene olor ni color.</p>'
+            },
+            'no2': {
+                titulo: '¿Qué es el NO₂?',
+                contenido: '<p>Es un gas que sale del <strong>humo de los autos</strong>. Se acumula en zonas con tráfico.</p>'
+            },
+            'o3': {
+                titulo: '¿Qué es el Ozono?',
+                contenido: '<p>El ozono es <strong>bueno arriba</strong> (nos protege del sol), pero <strong>malo donde respiramos</strong>.</p>'
+            },
+            'so2': {
+                titulo: '¿Qué es el SO₂?',
+                contenido: '<p>Es un gas que viene de <strong>industrias</strong>. Tiene olor fuerte.</p>'
+            },
+            'grafica': {
+                titulo: '¿Cómo leer la gráfica?',
+                contenido: '<p>La gráfica muestra cómo estuvo el aire en las <strong>últimas 24 horas</strong>.</p><p><strong>Cuanto más baja la línea, mejor el aire.</strong></p>'
+            },
+            'contaminantes': {
+                titulo: '¿Qué significa cada número?',
+                contenido: '<p>Cada tarjeta muestra un tipo diferente de contaminante.</p><p>Haz clic en cualquier tarjeta para saber qué es.</p>'
+            }
+        };
+
+        function abrirAyuda(tema) {
+            const ayuda = ayudaContenidos[tema] || ayudaContenidos['general'];
+            document.getElementById('ayudaTitulo').textContent = ayuda.titulo;
+            document.getElementById('ayudaContenido').innerHTML = ayuda.contenido;
+            document.getElementById('modalAyuda').style.display = 'flex';
+            lucide.createIcons();
+        }
+
+        function cerrarAyuda() {
+            document.getElementById('modalAyuda').style.display = 'none';
+        }
+
+        lucide.createIcons();
+
+        {% if datos.exito %}
+
+        const LAT_NAVOJOA = 27.0772;
+        const LON_NAVOJOA = -109.4463;
+        const PM25_ACTUAL = {{ datos.pm2_5 }};
+        const NIVEL_COLOR = '{{ datos.nivel.color }}';
+
+        const coloresNivel = {
+            'verde': '#10b981',
+            'amarillo': '#eab308',
+            'naranja': '#f97316',
+            'rojo': '#ef4444',
+            'morado': '#a855f7'
+        };
+
+        const mapa = L.map('mapa', {
+            center: [LAT_NAVOJOA, LON_NAVOJOA],
+            zoom: 13,
+            zoomControl: true,
+            scrollWheelZoom: false
+        });
+        window.mapaLeaflet = mapa;
+
+        const tileClaro = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '© OpenStreetMap',
+            maxZoom: 19
+        });
+        const tileOscuro = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '© OpenStreetMap',
+            maxZoom: 19
+        });
+
+        if (temaGuardado === 'oscuro') tileOscuro.addTo(mapa);
+        else tileClaro.addTo(mapa);
+
+        function actualizarMapa(tema) {
+            if (tema === 'oscuro') { mapa.removeLayer(tileClaro); tileOscuro.addTo(mapa); }
+            else { mapa.removeLayer(tileOscuro); tileClaro.addTo(mapa); }
+        }
+
+        const colorMarcador = coloresNivel[NIVEL_COLOR] || '#10b981';
+
+        L.circle([LAT_NAVOJOA, LON_NAVOJOA], {
+            color: colorMarcador,
+            fillColor: colorMarcador,
+            fillOpacity: 0.25,
+            radius: 5000,
+            weight: 3
+        }).addTo(mapa);
+
+        const iconoCustom = L.divIcon({
+            html: `<div style="background:${colorMarcador};color:white;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;box-shadow:0 4px 12px rgba(0,0,0,0.3);border:3px solid white;font-size:0.9em;">${Math.round(PM25_ACTUAL)}</div>`,
+            iconSize: [40, 40],
+            iconAnchor: [20, 20]
+        });
+        L.marker([LAT_NAVOJOA, LON_NAVOJOA], {icon: iconoCustom}).addTo(mapa);
+
+        {% if historico.exito %}
+        const datosHoras = {{ historico.horas | tojson }};
+        const datosPM25 = {{ historico.pm2_5 | tojson }};
+        const datosPM10 = {{ historico.pm10 | tojson }};
+
+        const ctx = document.getElementById('graficaHistorica').getContext('2d');
+        window.miGrafica = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: datosHoras,
+                datasets: [
+                    {
+                        label: 'PM2.5 (partículas pequeñas)',
+                        data: datosPM25,
+                        borderColor: '#1a5f6f',
+                        backgroundColor: 'rgba(26, 95, 111, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#1a5f6f',
+                        pointBorderColor: 'white',
+                        pointBorderWidth: 2,
+                        fill: true
+                    },
+                    {
+                        label: 'PM10 (polvo)',
+                        data: datosPM10,
+                        borderColor: '#7fb8bf',
+                        backgroundColor: 'rgba(127, 184, 191, 0.1)',
+                        borderWidth: 3,
+                        tension: 0.4,
+                        pointRadius: 5,
+                        pointBackgroundColor: '#7fb8bf',
+                        pointBorderColor: 'white',
+                        pointBorderWidth: 2,
+                        fill: true
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: { usePointStyle: true, padding: 20, font: { size: 13 } }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 60,
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        ticks: { color: '#8fa5aa' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#8fa5aa' }
+                    }
+                }
+            }
+        });
+        {% endif %}
+        {% endif %}
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="claro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a5f6f">
+    <title>Sobre el proyecto - AireLab</title>
+    
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sobre.css') }}">
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo-area">
+            <div class="logo-circulo">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="AireLab">
+            </div>
+            <div class="logo-text">
+                <div class="logo-nombre">AireLab</div>
+                <div class="logo-slogan">analizando lo invisible</div>
+            </div>
+        </div>
+        
+        <div class="header-acciones">
+            <nav class="nav-links">
+                <a href="/">
+                    <i data-lucide="home"></i>
+                    <span>Inicio</span>
+                </a>
+                <a href="/encuesta">
+                    <i data-lucide="clipboard-list"></i>
+                    <span>Encuesta</span>
+                </a>
+                <a href="/alertas">
+                    <i data-lucide="bell"></i>
+                    <span>Alertas</span>
+                </a>
+                <a href="/resultados">
+                    <i data-lucide="bar-chart-3"></i>
+                    <span>Resultados</span>
+                </a>
+                <a href="/sobre" class="active">
+                    <i data-lucide="info"></i>
+                    <span>Sobre</span>
+                </a>
+            </nav>
+            
+            <button class="tema-switch" onclick="cambiarTema()">
+                <i data-lucide="moon" class="tema-icono-claro"></i>
+                <i data-lucide="sun" class="tema-icono-oscuro"></i>
+            </button>
+        </div>
+    </header>
+    
+    <div class="container">
+
+        <!-- HERO -->
+        <section class="sobre-hero">
+            <div class="sobre-hero-icono">
+                <i data-lucide="wind"></i>
+            </div>
+            <h1>¿Qué es AireLab?</h1>
+            <p class="sobre-hero-subtitulo">
+                Una plataforma ciudadana de monitoreo de calidad del aire en Navojoa, Sonora,
+                que conecta datos ambientales con la salud respiratoria de la comunidad.
+            </p>
+            <div class="sobre-hero-tags">
+                <span class="tag-hero"><i data-lucide="map-pin"></i> Navojoa, Sonora</span>
+                <span class="tag-hero"><i data-lucide="calendar"></i> Marzo 2026 - Abril 2026</span>
+                <span class="tag-hero"><i data-lucide="users"></i> Proyecto académico</span>
+            </div>
+        </section>
+
+        <!-- PROBLEMÁTICA -->
+        <section class="card sobre-card">
+            <div class="sobre-icono-grande rojo">
+                <i data-lucide="alert-triangle"></i>
+            </div>
+            <h2>La problemática</h2>
+            <p>
+                En Navojoa, una ciudad agrícola del sur de Sonora, miles de personas conviven
+                a diario con contaminación del aire generada por la quema de residuos agrícolas,
+                tráfico vehicular y polvo del entorno.
+            </p>
+            <p>
+                A pesar de esto, <strong>no existe información pública accesible</strong> sobre 
+                la calidad del aire que respiramos, ni un sistema que conecte estos datos con
+                los problemas respiratorios que padece la población.
+            </p>
+            
+            <div class="datos-impacto">
+                <div class="dato-impacto">
+                    <span class="dato-numero">PM2.5</span>
+                    <span class="dato-label">Partículas que respiramos</span>
+                </div>
+                <div class="dato-impacto">
+                    <span class="dato-numero">0</span>
+                    <span class="dato-label">Estaciones de monitoreo público</span>
+                </div>
+                <div class="dato-impacto">
+                    <span class="dato-numero">∞</span>
+                    <span class="dato-label">Personas afectadas</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- NUESTRA SOLUCIÓN -->
+        <section class="card sobre-card">
+            <div class="sobre-icono-grande verde">
+                <i data-lucide="lightbulb"></i>
+            </div>
+            <h2>Nuestra solución</h2>
+            <p class="sobre-card-subtitulo">
+                AireLab combina tecnología accesible con investigación ciudadana para crear 
+                conciencia y herramientas reales:
+            </p>
+            
+            <div class="solucion-grid">
+                <div class="solucion-card">
+                    <div class="solucion-icono primario">
+                        <i data-lucide="activity"></i>
+                    </div>
+                    <h3>Monitoreo en tiempo real</h3>
+                    <p>Datos actualizados de PM2.5, PM10 y otros contaminantes usando OpenWeather API.</p>
+                </div>
+                
+                <div class="solucion-card">
+                    <div class="solucion-icono secundario">
+                        <i data-lucide="bell-ring"></i>
+                    </div>
+                    <h3>Alertas personalizadas</h3>
+                    <p>Notificaciones por correo según tu preferencia: diarias o solo cuando hay riesgo.</p>
+                </div>
+                
+                <div class="solucion-card">
+                    <div class="solucion-icono terciario">
+                        <i data-lucide="trending-up"></i>
+                    </div>
+                    <h3>Análisis de correlación</h3>
+                    <p>Cruzamos datos del aire con síntomas de la población para encontrar patrones.</p>
+                </div>
+                
+                <div class="solucion-card">
+                    <div class="solucion-icono morado">
+                        <i data-lucide="users"></i>
+                    </div>
+                    <h3>Investigación abierta</h3>
+                    <p>Resultados públicos para que la comunidad y autoridades tomen decisiones informadas.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- METODOLOGÍA -->
+        <section class="card sobre-card">
+            <div class="sobre-icono-grande azul">
+                <i data-lucide="microscope"></i>
+            </div>
+            <h2>¿Cómo funciona?</h2>
+            
+            <div class="metodologia-pasos">
+                <div class="metodo-paso">
+                    <div class="metodo-numero">1</div>
+                    <div class="metodo-contenido">
+                        <h3>Recolección de datos</h3>
+                        <p>Capturamos datos del aire cada hora desde OpenWeather API y aplicamos encuestas a la comunidad sobre síntomas respiratorios.</p>
+                    </div>
+                </div>
+                
+                <div class="metodo-paso">
+                    <div class="metodo-numero">2</div>
+                    <div class="metodo-contenido">
+                        <h3>Análisis con Pandas</h3>
+                        <p>Procesamos los datos con Python y Pandas para generar estadísticas, gráficas y encontrar patrones temporales.</p>
+                    </div>
+                </div>
+                
+                <div class="metodo-paso">
+                    <div class="metodo-numero">3</div>
+                    <div class="metodo-contenido">
+                        <h3>Correlación aire-salud</h3>
+                        <p>Comparamos picos de contaminación con reportes de enfermedades respiratorias para encontrar relaciones.</p>
+                    </div>
+                </div>
+                
+                <div class="metodo-paso">
+                    <div class="metodo-numero">4</div>
+                    <div class="metodo-contenido">
+                        <h3>Difusión y alertas</h3>
+                        <p>Enviamos notificaciones automáticas a suscriptores y publicamos resultados de forma abierta.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TECNOLOGÍAS -->
+        <section class="card sobre-card">
+            <div class="sobre-icono-grande naranja">
+                <i data-lucide="code-2"></i>
+            </div>
+            <h2>Tecnologías utilizadas</h2>
+            <p class="sobre-card-subtitulo">
+                AireLab está construido con tecnologías abiertas y modernas:
+            </p>
+            
+            <div class="tecnologias-grid">
+                <div class="tech-card">
+                    <i data-lucide="server"></i>
+                    <strong>Python + Flask</strong>
+                    <span>Servidor web</span>
+                </div>
+                <div class="tech-card">
+                    <i data-lucide="database"></i>
+                    <strong>Pandas</strong>
+                    <span>Análisis de datos</span>
+                </div>
+                <div class="tech-card">
+                    <i data-lucide="cloud"></i>
+                    <strong>OpenWeather API</strong>
+                    <span>Datos del aire</span>
+                </div>
+                <div class="tech-card">
+                    <i data-lucide="bar-chart-3"></i>
+                    <strong>Chart.js</strong>
+                    <span>Gráficas</span>
+                </div>
+                <div class="tech-card">
+                    <i data-lucide="map"></i>
+                    <strong>Leaflet.js</strong>
+                    <span>Mapas interactivos</span>
+                </div>
+                <div class="tech-card">
+                    <i data-lucide="mail"></i>
+                    <strong>Gmail SMTP</strong>
+                    <span>Notificaciones</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- EQUIPO -->
+        <section class="card sobre-card">
+            <div class="sobre-icono-grande primario">
+                <i data-lucide="user-circle"></i>
+            </div>
+            <h2>Equipo</h2>
+            
+            <div class="equipo-grid">
+                <div class="miembro-card-grid">
+                    <div class="miembro-avatar">
+                        <i data-lucide="user"></i>
+                    </div>
+                    <h3>Sergio Rafael Valenzuela Morales</h3>
+                    <span class="miembro-rol">Desarrollador e investigador</span>
+                    <p>Diseño, programación y análisis del proyecto.</p>
+                </div>
+                
+                <div class="miembro-card-grid">
+                    <div class="miembro-avatar">
+                        <i data-lucide="user"></i>
+                    </div>
+                    <h3>Pablo Soto Guerrero</h3>
+                    <span class="miembro-rol">Investigador colaborador</span>
+                    <p>Apoyo en investigación y desarrollo del proyecto.</p>
+                </div>
+                
+                <div class="miembro-card-grid">
+                    <div class="miembro-avatar">
+                        <i data-lucide="user"></i>
+                    </div>
+                    <h3>José Adehir Mendoza Mátuz</h3>
+                    <span class="miembro-rol">Investigador colaborador</span>
+                    <p>Apoyo en investigación y desarrollo del proyecto.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- LIMITACIONES Y FUTURO -->
+        <section class="card sobre-card">
+            <div class="sobre-icono-grande amarillo">
+                <i data-lucide="info"></i>
+            </div>
+            <h2>Limitaciones y trabajo futuro</h2>
+            
+            <div class="limitaciones-lista">
+                <div class="limitacion-item">
+                    <i data-lucide="alert-circle"></i>
+                    <div>
+                        <strong>Datos satelitales</strong>
+                        <span>Los datos provienen de OpenWeather API, no de sensores físicos en Navojoa. Se necesitarían estaciones locales para mayor precisión.</span>
+                    </div>
+                </div>
+                
+                <div class="limitacion-item">
+                    <i data-lucide="alert-circle"></i>
+                    <div>
+                        <strong>Muestra de encuestas</strong>
+                        <span>El análisis de salud depende del número de personas que responden la encuesta. Mientras más respuestas, más confiables las correlaciones.</span>
+                    </div>
+                </div>
+                
+                <div class="limitacion-item">
+                    <i data-lucide="rocket"></i>
+                    <div>
+                        <strong>Próximos pasos</strong>
+                        <span>Implementar alertas por WhatsApp, integrar más fuentes de datos, expandir a otras ciudades del sur de Sonora.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA FINAL -->
+        <section class="sobre-cta">
+            <h2>¿Quieres ser parte del proyecto?</h2>
+            <p>Tu participación ayuda a crear conciencia sobre la calidad del aire en Navojoa.</p>
+            <div class="sobre-cta-botones">
+                <a href="/encuesta" class="btn-cta-principal">
+                    <i data-lucide="clipboard-list"></i>
+                    <span>Responder encuesta</span>
+                </a>
+                <a href="/alertas" class="btn-cta-secundario">
+                    <i data-lucide="bell"></i>
+                    <span>Suscribirme a alertas</span>
+                </a>
+            </div>
+        </section>
+
+    </div>
+
+    <footer class="footer">
+        <div class="footer-contenido">
+            <i data-lucide="wind"></i>
+            <p><strong>AireLab</strong> · analizando lo invisible · Navojoa, Sonora 2024-2026</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script>
+        const temaGuardado = localStorage.getItem('airelabTema') || 'oscuro';
+        document.documentElement.setAttribute('data-tema', temaGuardado);
+
+        function cambiarTema() {
+            const t = document.documentElement.getAttribute('data-tema');
+            const nuevo = t === 'claro' ? 'oscuro' : 'claro';
+            document.documentElement.setAttribute('data-tema', nuevo);
+            localStorage.setItem('airelabTema', nuevo);
+        }
+
+        lucide.createIcons();
+    </script>
+
+</body>
+</html>

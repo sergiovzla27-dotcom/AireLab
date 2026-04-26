@@ -1,0 +1,33 @@
+# Archivos de entorno (API Keys, contraseñas)
+.env
+*.key
+config/secrets.*
+
+# Archivos de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+
+# Entornos virtuales
+venv/
+env/
+.venv/
+
+# Archivos de VS Code
+.vscode/
+*.code-workspace
+
+# Datos locales (opcional - descoméntalo si no quieres subir CSVs)
+# data/*.csv
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Archivos temporales
+*.tmp
+*.log

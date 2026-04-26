@@ -1,0 +1,454 @@
+ <!DOCTYPE html>
+<html lang="es" data-tema="claro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a5f6f">
+    <title>Resultados - AireLab</title>
+    
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/stats.css') }}">
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo-area">
+            <div class="logo-circulo">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="AireLab">
+            </div>
+            <div class="logo-text">
+                <div class="logo-nombre">AireLab</div>
+                <div class="logo-slogan">analizando lo invisible</div>
+            </div>
+        </div>
+        
+        <div class="header-acciones">
+            <nav class="nav-links">
+                <a href="/"><i data-lucide="home"></i><span>Inicio</span></a>
+                <a href="/encuesta"><i data-lucide="clipboard-list"></i><span>Encuesta</span></a>
+                <a href="/alertas"><i data-lucide="bell"></i><span>Alertas</span></a>
+                <a href="/resultados" class="active"><i data-lucide="bar-chart-3"></i><span>Resultados</span></a>
+                <a href="/sobre"><i data-lucide="info"></i><span>Sobre</span></a>
+            </nav>
+            <button class="tema-switch" onclick="cambiarTema()">
+                <i data-lucide="moon" class="tema-icono-claro"></i>
+                <i data-lucide="sun" class="tema-icono-oscuro"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- HERO -->
+        <div class="card stats-hero">
+            <div class="hero-icono-grande">
+                <i data-lucide="users-round"></i>
+            </div>
+            <h1>¿Qué nos cuentan los habitantes de Navojoa?</h1>
+            <p class="hero-subtitulo">
+                Aquí puedes ver, en lenguaje sencillo, lo que la gente nos ha respondido sobre la calidad del aire y su salud
+            </p>
+        </div>
+
+        {% if stats.exito %}
+
+        <!-- ============================================ -->
+        <!-- NUEVO: AIRE vs ENFERMEDADES (CORRELACION)   -->
+        <!-- ============================================ -->
+        {% if stats.correlacion %}
+        <div class="card correlacion-card">
+            <div class="correlacion-titulo-wrap">
+                <i data-lucide="link-2"></i>
+                <div>
+                    <h2>¿Cómo se relaciona el aire con la salud?</h2>
+                    <p>Aquí puedes ver la conexión entre el aire que respiramos y las enfermedades</p>
+                </div>
+            </div>
+
+            <div class="correlacion-comparacion">
+                <!-- Lado izquierdo: AIRE AHORA -->
+                <div class="correlacion-lado">
+                    <div class="correlacion-label">AIRE AHORITA EN NAVOJOA</div>
+                    <div class="correlacion-valor-grande nivel-{{ stats.correlacion.nivel_color }}">
+                        {{ stats.correlacion.pm25_actual }}
+                        <span class="unidad">µg/m³</span>
+                    </div>
+                    <div class="correlacion-nivel-badge nivel-{{ stats.correlacion.nivel_color }}-bg-suave">
+                        {{ stats.correlacion.nivel_texto }}
+                    </div>
+                </div>
+
+                <!-- Conector -->
+<div class="correlacion-conector">
+    <i data-lucide="git-compare"></i>
+</div>
+
+                <!-- Lado derecho: PERSONAS ENFERMAS -->
+                <div class="correlacion-lado">
+                    <div class="correlacion-label">PERSONAS CON SÍNTOMAS</div>
+                    <div class="correlacion-valor-grande" style="color: var(--accent-rojo);">
+                        {{ stats.correlacion.pct_sintomas }}<span class="unidad">%</span>
+                    </div>
+                    <div class="correlacion-nivel-badge" style="background: rgba(239, 68, 68, 0.15); color: var(--accent-rojo);">
+                        Reportan tos o falta de aire
+                    </div>
+                </div>
+            </div>
+
+            <!-- Interpretación amigable -->
+            <div class="correlacion-interpretacion">
+                <div class="interpretacion-icono">
+                    <i data-lucide="lightbulb"></i>
+                </div>
+                <div>
+                    <strong>{{ stats.correlacion.interpretacion.titulo }}</strong>
+                    <p>{{ stats.correlacion.interpretacion.mensaje }}</p>
+                </div>
+            </div>
+
+            <!-- Explicación didáctica -->
+            <div class="correlacion-explicacion">
+                <h3>¿Por qué importa esta relación?</h3>
+                <div class="explicacion-grid">
+                    <div class="explicacion-item">
+                        <div class="explicacion-emoji">
+                            <i data-lucide="wind"></i>
+                        </div>
+                        <strong>El aire malo daña</strong>
+                        <p>Las partículas pequeñas (PM2.5) entran a tus pulmones cuando respiras</p>
+                    </div>
+                    <div class="explicacion-item">
+                        <div class="explicacion-emoji">
+                            <i data-lucide="activity"></i>
+                        </div>
+                        <strong>Causa síntomas</strong>
+                        <p>Provoca tos, irritación de garganta y dificultad para respirar</p>
+                    </div>
+                    <div class="explicacion-item">
+                        <div class="explicacion-emoji">
+                            <i data-lucide="heart-pulse"></i>
+                        </div>
+                        <strong>Afecta más a algunos</strong>
+                        <p>Niños, ancianos y personas con asma son más vulnerables</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- TOTALES -->
+        <div class="stats-grid-principal">
+            <div class="stat-card stat-card-grande">
+                <div class="stat-icono primario">
+                    <i data-lucide="users"></i>
+                </div>
+                <div class="stat-numero">{{ stats.total_respuestas }}</div>
+                <div class="stat-label">Personas han participado</div>
+                <div class="stat-detalle">¡Gracias por su tiempo!</div>
+            </div>
+
+            <div class="stat-card stat-card-grande">
+                <div class="stat-icono secundario">
+                    <i data-lucide="bell-ring"></i>
+                </div>
+                <div class="stat-numero">{{ stats.total_suscriptores }}</div>
+                <div class="stat-label">Reciben alertas del aire</div>
+                <div class="stat-detalle">En su WhatsApp o correo</div>
+            </div>
+        </div>
+
+        <!-- HALLAZGOS -->
+        <div class="card">
+            <div class="card-header-stats">
+                <i data-lucide="lightbulb"></i>
+                <div>
+                    <h2>Lo que estamos aprendiendo</h2>
+                    <p>Esto es lo que las personas de Navojoa nos compartieron</p>
+                </div>
+            </div>
+
+            <div class="hallazgos-explicados">
+                <div class="hallazgo-explicado">
+                    <div class="hallazgo-pct-grande" style="color: var(--accent-rojo);">
+                        {{ stats.porcentajes.con_sintomas }}%
+                    </div>
+                    <div class="hallazgo-explicacion">
+                        <div class="hallazgo-titulo">
+                            <i data-lucide="activity"></i>
+                            <span>Tuvieron problemas para respirar</span>
+                        </div>
+                        <p>De las personas que respondieron, este porcentaje dijo que sí ha tenido tos, dificultad para respirar o flemas en el último año.</p>
+                    </div>
+                </div>
+
+                <div class="hallazgo-explicado">
+                    <div class="hallazgo-pct-grande" style="color: var(--accent-naranja);">
+                        {{ stats.porcentajes.visitaron_medico }}%
+                    </div>
+                    <div class="hallazgo-explicacion">
+                        <div class="hallazgo-titulo">
+                            <i data-lucide="stethoscope"></i>
+                            <span>Tuvieron que ir al doctor</span>
+                        </div>
+                        <p>Este porcentaje de personas necesitó atención médica por problemas respiratorios. Esto nos dice qué tan grave puede ser el aire malo.</p>
+                    </div>
+                </div>
+
+                <div class="hallazgo-explicado">
+                    <div class="hallazgo-pct-grande" style="color: var(--accent-verde);">
+                        {{ stats.porcentajes.usarian_app }}%
+                    </div>
+                    <div class="hallazgo-explicacion">
+                        <div class="hallazgo-titulo">
+                            <i data-lucide="smartphone"></i>
+                            <span>Sí usarían AireLab</span>
+                        </div>
+                        <p>La mayoría de personas dijo que les gustaría tener una app que les avise cuando el aire esté peligroso. ¡Esto valida nuestro proyecto!</p>
+                    </div>
+                </div>
+
+                <div class="hallazgo-explicado">
+                    <div class="hallazgo-pct-grande" style="color: var(--accent-secundario);">
+                        {{ stats.porcentajes.recomendarian }}%
+                    </div>
+                    <div class="hallazgo-explicacion">
+                        <div class="hallazgo-titulo">
+                            <i data-lucide="heart"></i>
+                            <span>Recomendarían AireLab</span>
+                        </div>
+                        <p>Este porcentaje de personas le diría a un familiar o amigo que use AireLab. Significa que confían en el proyecto.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRÁFICAS -->
+        <div class="grid-graficas-2">
+            <div class="card">
+                <div class="card-header-stats">
+                    <i data-lucide="pie-chart"></i>
+                    <div>
+                        <h2>¿De qué edades son?</h2>
+                        <p>Quiénes están participando en la encuesta</p>
+                    </div>
+                </div>
+                <div class="grafica-contenedor-mediano">
+                    <canvas id="graficaEdad"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header-stats">
+                    <i data-lucide="bar-chart-2"></i>
+                    <div>
+                        <h2>¿Cómo ven el aire?</h2>
+                        <p>La opinión de la gente sobre el aire que respiran</p>
+                    </div>
+                </div>
+                <div class="grafica-contenedor-mediano">
+                    <canvas id="graficaAire"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- MESES (PREGUNTA ESTRELLA) -->
+        <div class="card">
+            <div class="card-header-stats">
+                <i data-lucide="calendar-x"></i>
+                <div>
+                    <h2>¿Cuándo se enferman más?</h2>
+                    <p>Los meses con más reportes de enfermedades respiratorias</p>
+                </div>
+            </div>
+            <div class="grafica-contenedor-grande">
+                <canvas id="graficaMeses"></canvas>
+            </div>
+            <div class="grafica-nota">
+                <i data-lucide="info"></i>
+                <span>
+                    <strong>¿Para qué sirve esto?</strong> Nos permite saber en qué meses la gente se enferma más, 
+                    para luego comparar con la contaminación del aire en esos mismos meses.
+                </span>
+            </div>
+        </div>
+
+        <!-- VULNERABLES -->
+        <div class="card">
+            <div class="card-header-stats">
+                <i data-lucide="shield-check"></i>
+                <div>
+                    <h2>¿Quiénes están en sus hogares?</h2>
+                    <p>Personas que necesitan más cuidado con el aire</p>
+                </div>
+            </div>
+            <div class="vulnerables-grid">
+                <div class="vulnerable-stat">
+                    <div class="vulnerable-icono-wrap">
+                        <i data-lucide="baby"></i>
+                    </div>
+                    <div class="vulnerable-numero">{{ stats.vulnerables.ninos }}</div>
+                    <div class="vulnerable-label">Hogares con niños pequeños</div>
+                </div>
+                <div class="vulnerable-stat">
+                    <div class="vulnerable-icono-wrap">
+                        <i data-lucide="user-round"></i>
+                    </div>
+                    <div class="vulnerable-numero">{{ stats.vulnerables.adultos_mayores }}</div>
+                    <div class="vulnerable-label">Hogares con adultos mayores</div>
+                </div>
+                <div class="vulnerable-stat">
+                    <div class="vulnerable-icono-wrap">
+                        <i data-lucide="wind"></i>
+                    </div>
+                    <div class="vulnerable-numero">{{ stats.vulnerables.asma }}</div>
+                    <div class="vulnerable-label">Hogares con asma</div>
+                </div>
+                <div class="vulnerable-stat">
+                    <div class="vulnerable-icono-wrap">
+                        <i data-lucide="check-circle-2"></i>
+                    </div>
+                    <div class="vulnerable-numero">{{ stats.vulnerables.ninguna }}</div>
+                    <div class="vulnerable-label">Hogares sin vulnerables</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="card stats-cta">
+            <div class="cta-icono">
+                <i data-lucide="hand-heart"></i>
+            </div>
+            <h2>¿Aún no has participado?</h2>
+            <p>Tu opinión es importante. Solo te tomará 5 minutos y nos ayudas a cuidar la salud de Navojoa</p>
+            <a href="/encuesta" class="btn-principal">
+                <i data-lucide="clipboard-list"></i>
+                <span>Quiero participar</span>
+            </a>
+        </div>
+
+        {% else %}
+        <div class="card stats-vacio">
+            <div class="vacio-icono">
+                <i data-lucide="inbox"></i>
+            </div>
+            <h2>¡Aún no hay respuestas!</h2>
+            <p>{{ stats.mensaje }}</p>
+            <a href="/encuesta" class="btn-principal">
+                <i data-lucide="clipboard-list"></i>
+                <span>Ser el primero</span>
+            </a>
+        </div>
+        {% endif %}
+
+    </div>
+
+    <footer class="footer">
+        <div class="footer-contenido">
+            <i data-lucide="wind"></i>
+            <p><strong>AireLab</strong> © 2026 · analizando lo invisible</p>
+        </div>
+        <p>Monitoreo ciudadano · Navojoa, Sonora</p>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const temaGuardado = localStorage.getItem('airelabTema') || 'claro';
+        document.documentElement.setAttribute('data-tema', temaGuardado);
+
+        function cambiarTema() {
+            const t = document.documentElement.getAttribute('data-tema');
+            const nuevo = t === 'claro' ? 'oscuro' : 'claro';
+            document.documentElement.setAttribute('data-tema', nuevo);
+            localStorage.setItem('airelabTema', nuevo);
+        }
+
+        // IMPORTANTE: Llamar a lucide.createIcons al final, despues de que todo cargue
+        document.addEventListener('DOMContentLoaded', function() {
+            lucide.createIcons();
+        });
+
+        {% if stats.exito %}
+        const colores = {
+            primario: '#1a5f6f', secundario: '#4a9ba8', terciario: '#7fb8bf',
+            verde: '#10b981', amarillo: '#eab308', naranja: '#f97316',
+            rojo: '#ef4444', morado: '#a855f7'
+        };
+
+        const opcionesComun = {
+            responsive: true, maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'bottom', labels: { padding: 15, font: { size: 12 } } }
+            }
+        };
+
+        window.addEventListener('load', function() {
+            const datosEdad = {{ stats.distribucion_edad | tojson }};
+            if (Object.keys(datosEdad).length > 0) {
+                new Chart(document.getElementById('graficaEdad'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(datosEdad),
+                        datasets: [{
+                            data: Object.values(datosEdad),
+                            backgroundColor: [colores.primario, colores.secundario, colores.terciario, colores.verde, colores.amarillo],
+                            borderWidth: 2, borderColor: 'white'
+                        }]
+                    },
+                    options: opcionesComun
+                });
+            }
+
+            const datosAire = {{ stats.percepcion_aire | tojson }};
+            if (Object.keys(datosAire).length > 0) {
+                new Chart(document.getElementById('graficaAire'), {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(datosAire),
+                        datasets: [{
+                            label: 'Personas',
+                            data: Object.values(datosAire),
+                            backgroundColor: [colores.verde, colores.terciario, colores.amarillo, colores.naranja, colores.rojo],
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        ...opcionesComun,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                    }
+                });
+            }
+
+            const datosMeses = {{ stats.meses_enfermos | tojson }};
+            if (Object.keys(datosMeses).length > 0) {
+                new Chart(document.getElementById('graficaMeses'), {
+                    type: 'line',
+                    data: {
+                        labels: Object.keys(datosMeses),
+                        datasets: [{
+                            label: 'Personas enfermas',
+                            data: Object.values(datosMeses),
+                            borderColor: colores.primario,
+                            backgroundColor: 'rgba(26, 95, 111, 0.15)',
+                            borderWidth: 3, tension: 0.4, fill: true,
+                            pointRadius: 6,
+                            pointBackgroundColor: colores.primario,
+                            pointBorderColor: 'white', pointBorderWidth: 2
+                        }]
+                    },
+                    options: {
+                        ...opcionesComun,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                    }
+                });
+            }
+        });
+        {% endif %}
+    </script>
+
+</body>
+</html>

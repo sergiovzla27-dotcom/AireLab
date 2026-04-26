@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="claro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Darse de baja - AireLab</title>
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.png') }}">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a5f6f 0%, #4a9ba8 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .baja-card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 48px 40px;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            text-align: center;
+        }
+        
+        .baja-icono {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+        }
+        
+        .baja-icono svg {
+            width: 50px;
+            height: 50px;
+        }
+        
+        .baja-icono.exito {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+        }
+        
+        .baja-icono.error {
+            background: rgba(239, 68, 68, 0.15);
+            color: #ef4444;
+        }
+        
+        .baja-card h1 {
+            font-size: 1.6em;
+            font-weight: 700;
+            color: #1f2937;
+            margin: 0 0 12px 0;
+        }
+        
+        .baja-card p {
+            color: #6b7280;
+            font-size: 1em;
+            line-height: 1.6;
+            margin: 0 0 24px 0;
+        }
+        
+        .baja-info {
+            background: #f1f5f6;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 24px 0;
+            text-align: left;
+        }
+        
+        .baja-info strong {
+            color: #1f2937;
+            display: block;
+            margin-bottom: 8px;
+        }
+        
+        .baja-info span {
+            color: #6b7280;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        
+        .baja-acciones {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 32px;
+        }
+        
+        .btn-volver, .btn-resuscribir {
+            padding: 14px 24px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95em;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        
+        .btn-volver {
+            background: #1a5f6f;
+            color: white;
+        }
+        
+        .btn-volver:hover {
+            background: #154d5b;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(26, 95, 111, 0.3);
+        }
+        
+        .btn-resuscribir {
+            background: #f1f5f6;
+            color: #1f2937;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .btn-resuscribir:hover {
+            background: #e5e7eb;
+        }
+        
+        .btn-volver svg, .btn-resuscribir svg {
+            width: 18px;
+            height: 18px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="baja-card">
+        
+        {% if exito %}
+        
+        <div class="baja-icono exito">
+            {% if ya_inactivo %}
+            <i data-lucide="info"></i>
+            {% else %}
+            <i data-lucide="check-circle"></i>
+            {% endif %}
+        </div>
+        
+        <h1>
+            {% if ya_inactivo %}
+            Ya estabas dado de baja
+            {% else %}
+            ¡Listo, {{ nombre.split(' ')[0] if nombre else 'amigo' }}!
+            {% endif %}
+        </h1>
+        
+        <p>{{ mensaje }}</p>
+        
+        {% if not ya_inactivo %}
+        <div class="baja-info">
+            <strong>¿Qué pasó?</strong>
+            <span>Tu correo y datos siguen guardados en nuestra base, pero no recibirás más alertas. Si en algún momento cambias de opinión, puedes volver a suscribirte.</span>
+        </div>
+        {% endif %}
+        
+        <div class="baja-acciones">
+            <a href="/" class="btn-volver">
+                <i data-lucide="home"></i>
+                <span>Volver al inicio</span>
+            </a>
+            
+            {% if not ya_inactivo %}
+            <a href="/alertas" class="btn-resuscribir">
+                <i data-lucide="bell"></i>
+                <span>Suscribirme de nuevo</span>
+            </a>
+            {% endif %}
+        </div>
+        
+        {% else %}
+        
+        <div class="baja-icono error">
+            <i data-lucide="alert-circle"></i>
+        </div>
+        
+        <h1>No pudimos procesar tu solicitud</h1>
+        <p>{{ mensaje }}</p>
+        
+        <div class="baja-info">
+            <strong>¿Qué puedo hacer?</strong>
+            <span>Revisa que el link sea correcto. Si el problema persiste, contacta al administrador.</span>
+        </div>
+        
+        <div class="baja-acciones">
+            <a href="/" class="btn-volver">
+                <i data-lucide="home"></i>
+                <span>Volver al inicio</span>
+            </a>
+        </div>
+        
+        {% endif %}
+        
+    </div>
+    
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script>lucide.createIcons();</script>
+    
+</body>
+</html>
