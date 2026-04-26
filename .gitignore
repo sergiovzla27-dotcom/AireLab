@@ -1,4 +1,5 @@
-# Archivos de entorno (API Keys, contraseñas)
+# Credenciales secretas (NO SUBIR NUNCA)
+credenciales_google.json
 .env
 *.key
 config/secrets.*
@@ -20,8 +21,8 @@ env/
 .vscode/
 *.code-workspace
 
-# Datos locales (opcional - descoméntalo si no quieres subir CSVs)
-# data/*.csv
+# Datos locales
+data/*.csv
 
 # Archivos del sistema
 .DS_Store
