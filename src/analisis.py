@@ -2,19 +2,19 @@
 AireLab - Modulo de Analisis de Datos
 Procesa los datos de Google Sheets con Pandas y conecta con datos de aire en tiempo real
 """
-
+ 
 import os
 import pandas as pd
 from datetime import datetime
 import sys
-
+ 
 # Agregar src/ al path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-
+ 
 from openweather import obtener_datos_actuales
 from sheets import leer_encuestas, leer_suscriptores
-
-
+ 
+ 
 def cargar_encuestas():
     """Carga las encuestas desde Google Sheets como DataFrame."""
     try:
@@ -25,8 +25,8 @@ def cargar_encuestas():
     except Exception as e:
         print(f"Error cargando encuestas desde Sheets: {e}")
         return pd.DataFrame()
-
-
+ 
+ 
 def cargar_suscriptores():
     """Carga los suscriptores desde Google Sheets como DataFrame."""
     try:
@@ -37,8 +37,8 @@ def cargar_suscriptores():
     except Exception as e:
         print(f"Error cargando suscriptores desde Sheets: {e}")
         return pd.DataFrame()
-
-
+ 
+ 
 def obtener_stats_publicas():
     """Genera las estadisticas publicas + datos de aire actual"""
     
@@ -166,8 +166,8 @@ def obtener_stats_publicas():
         "aire_actual": datos_aire if datos_aire.get('exito') else None,
         "correlacion": correlacion
     }
-
-
+ 
+ 
 def analizar_correlacion(df, datos_aire):
     """Analiza la posible relacion entre la calidad del aire y los sintomas reportados."""
     
@@ -229,8 +229,8 @@ def analizar_correlacion(df, datos_aire):
         "pct_vulnerables": pct_vulnerables,
         "interpretacion": interpretacion
     }
-
-
+ 
+ 
 def obtener_stats_admin():
     """Estadisticas detalladas para el panel de admin"""
     

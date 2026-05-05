@@ -214,20 +214,9 @@
 
                 <div class="pregunta">
                     <label class="pregunta-label"><span class="pregunta-numero">7.</span> Marca los meses en que te enfermaste de vías respiratorias</label>
-                    <p class="pregunta-nota">De mayo 2025 a abril 2026 (puedes marcar varios)</p>
-                    <div class="meses-grid">
-                        <label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="may_2025"><span>May 2025</span></label>
-                        <label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="jun_2025"><span>Jun 2025</span></label>
-                        <label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="jul_2025"><span>Jul 2025</span></label>
-                        <label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="ago_2025"><span>Ago 2025</span></label>
-                        <label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="sep_2025"><span>Sep 2025</span></label>
-                        <label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="oct_2025"><span>Oct 2025</span></label>
-                        <label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="nov_2025"><span>Nov 2025</span></label>
-                        <label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="dic_2025"><span>Dic 2025</span></label>
-                        <label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="ene_2026"><span>Ene 2026</span></label>
-                        <label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="feb_2026"><span>Feb 2026</span></label>
-                        <label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="mar_2026"><span>Mar 2026</span></label>
-                        <label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="abr_2026"><span>Abr 2026</span></label>
+                    <p class="pregunta-nota" id="rangoMesesNota">Últimos 12 meses (puedes marcar varios)</p>
+                    <div class="meses-grid" id="mesesGrid">
+                        <!-- Generado dinamicamente con JavaScript -->
                     </div>
                 </div>
 
@@ -422,6 +411,48 @@
             localStorage.setItem('airelabTema', nuevo);
         }
 
+        // ============================================
+        // GENERAR MESES DINAMICAMENTE (ULTIMOS 12 MESES)
+        // ============================================
+        function generarMesesDinamicos() {
+            const nombresMeses = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 
+                                   'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+            const nombresMesesCortos = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 
+                                         'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+            
+            const ahora = new Date();
+            const mesActual = ahora.getMonth();
+            const anioActual = ahora.getFullYear();
+            
+            const meses = [];
+            
+            for (let i = 11; i >= 0; i--) {
+                const fecha = new Date(anioActual, mesActual - i, 1);
+                const mesIndex = fecha.getMonth();
+                const anio = fecha.getFullYear();
+                
+                meses.push({
+                    valor: nombresMeses[mesIndex] + '_' + anio,
+                    etiqueta: nombresMesesCortos[mesIndex] + ' ' + anio
+                });
+            }
+            
+            const grid = document.getElementById('mesesGrid');
+            if (grid) {
+                let html = '';
+                for (let i = 0; i < meses.length; i++) {
+                    html += '<label class="opcion-mes"><input type="checkbox" name="meses_enfermo" value="' + meses[i].valor + '"><span>' + meses[i].etiqueta + '</span></label>';
+                }
+                grid.innerHTML = html;
+            }
+            
+            const nota = document.getElementById('rangoMesesNota');
+            if (nota && meses.length > 0) {
+                nota.textContent = 'De ' + meses[0].etiqueta + ' a ' + meses[meses.length - 1].etiqueta + ' (puedes marcar varios)';
+            }
+        }
+
+        generarMesesDinamicos();
         lucide.createIcons();
 
         function iniciarEncuesta() {
@@ -434,12 +465,12 @@
         function actualizarProgreso(seccion) {
             const porcentaje = (seccion / 4) * 100;
             document.getElementById('progresoBarra').style.width = porcentaje + '%';
-            document.getElementById('progresoTexto').textContent = `Sección ${seccion} de 4`;
+            document.getElementById('progresoTexto').textContent = 'Sección ' + seccion + ' de 4';
             document.getElementById('progresoPorcentaje').textContent = Math.round(porcentaje) + '%';
         }
 
         function siguienteSeccion(actual) {
-            const seccionActual = document.querySelector(`[data-seccion="${actual}"]`);
+            const seccionActual = document.querySelector('[data-seccion="' + actual + '"]');
             const camposRequeridos = seccionActual.querySelectorAll('[required]');
             
             for (const campo of camposRequeridos) {
@@ -458,15 +489,15 @@
             }
 
             seccionActual.style.display = 'none';
-            document.querySelector(`[data-seccion="${actual + 1}"]`).style.display = 'block';
+            document.querySelector('[data-seccion="' + (actual + 1) + '"]').style.display = 'block';
             actualizarProgreso(actual + 1);
             window.scrollTo({ top: 0, behavior: 'smooth' });
             lucide.createIcons();
         }
 
         function seccionAnterior(actual) {
-            document.querySelector(`[data-seccion="${actual}"]`).style.display = 'none';
-            document.querySelector(`[data-seccion="${actual - 1}"]`).style.display = 'block';
+            document.querySelector('[data-seccion="' + actual + '"]').style.display = 'none';
+            document.querySelector('[data-seccion="' + (actual - 1) + '"]').style.display = 'block';
             actualizarProgreso(actual - 1);
             window.scrollTo({ top: 0, behavior: 'smooth' });
             lucide.createIcons();
