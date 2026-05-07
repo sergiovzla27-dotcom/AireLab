@@ -140,7 +140,6 @@ def api_stats():
 def procesar_encuesta():
     try:
         datos = request.get_json()
-        print("DATOS RECIBIDOS:", datos)  # línea temporal
         id_unico = guardar_encuesta(datos)
         return jsonify({"exito": True, "mensaje": "Encuesta guardada", "id": id_unico})
     except Exception as e:

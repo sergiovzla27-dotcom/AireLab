@@ -1,6 +1,6 @@
 """
-AireLab - Modulo de OpenWeather
-Gestiona todas las consultas a la API y procesa datos con Pandas
+AireLab - Modulo de OpenWeather + Validacion Cruzada
+Gestiona consultas a 3 fuentes (OpenWeather, WAQI, OpenAQ) y procesa con Pandas
 """
 
 import os
@@ -18,9 +18,16 @@ LONGITUD = float(os.getenv("LONGITUD", -109.4463))
 URL_ACTUAL = "http://api.openweathermap.org/data/2.5/air_pollution"
 URL_HISTORICO = "http://api.openweathermap.org/data/2.5/air_pollution/history"
 
+# WAQI - World Air Quality Index (segunda fuente)
+WAQI_TOKEN = os.getenv("WAQI_TOKEN")
+URL_WAQI = "https://api.waqi.info/feed/geo:{lat};{lon}/"
+
+# OpenAQ - Plataforma global de calidad del aire (tercera fuente)
+URL_OPENAQ = "https://api.openaq.org/v3/locations"
+
 
 def obtener_datos_actuales():
-    """Obtiene datos actuales de calidad del aire"""
+    """Obtiene datos actuales de calidad del aire con validacion cruzada (3 fuentes)"""
     
     parametros = {
         "lat": LATITUD,
@@ -37,6 +44,25 @@ def obtener_datos_actuales():
             aqi = datos['list'][0]['main']['aqi']
             timestamp = datos['list'][0]['dt']
             
+            # VALIDACION CRUZADA - Consultar 3 fuentes
+            pm25_openweather = round(contaminantes['pm2_5'], 2)
+            pm25_waqi = obtener_pm25_waqi()
+            pm25_openaq = obtener_pm25_openaq()
+            
+            # Calcular PM2.5 final (promedio de las fuentes disponibles)
+            fuentes_consultadas = ['OpenWeather']
+            valores_pm25 = [pm25_openweather]
+            
+            if pm25_waqi is not None:
+                fuentes_consultadas.append('WAQI')
+                valores_pm25.append(pm25_waqi)
+            
+            if pm25_openaq is not None:
+                fuentes_consultadas.append('OpenAQ')
+                valores_pm25.append(pm25_openaq)
+            
+            pm25_promedio = round(sum(valores_pm25) / len(valores_pm25), 2)
+            
             dias_es = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo']
             meses_es = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
                        'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre']
@@ -48,21 +74,107 @@ def obtener_datos_actuales():
                 "exito": True,
                 "fecha": fecha_formateada,
                 "hora": fecha_obj.strftime('%H:%M'),
-                "pm2_5": round(contaminantes['pm2_5'], 2),
+                "pm2_5": pm25_promedio,
                 "pm10": round(contaminantes['pm10'], 2),
                 "co": round(contaminantes['co'], 2),
                 "no2": round(contaminantes['no2'], 2),
                 "o3": round(contaminantes['o3'], 2),
                 "so2": round(contaminantes['so2'], 2),
                 "aqi": aqi,
-                "nivel": interpretar_pm25(contaminantes['pm2_5']),
-                "recomendaciones": obtener_recomendaciones(contaminantes['pm2_5'])
+                "nivel": interpretar_pm25(pm25_promedio),
+                "recomendaciones": obtener_recomendaciones(pm25_promedio),
+                "validacion": {
+                    "fuentes_consultadas": fuentes_consultadas,
+                    "total_fuentes": len(fuentes_consultadas),
+                    "valores_individuales": {
+                        "openweather": pm25_openweather,
+                        "waqi": pm25_waqi,
+                        "openaq": pm25_openaq
+                    }
+                }
             }
         else:
             return {"exito": False, "error": f"Error {respuesta.status_code}"}
     
     except Exception as e:
         return {"exito": False, "error": str(e)}
+
+
+def obtener_pm25_waqi():
+    """
+    Consulta WAQI (segunda fuente para validacion cruzada).
+    Devuelve solo PM2.5 para promediar con OpenWeather.
+    """
+    
+    if not WAQI_TOKEN:
+        return None
+    
+    try:
+        url = URL_WAQI.format(lat=LATITUD, lon=LONGITUD)
+        respuesta = requests.get(url, params={"token": WAQI_TOKEN}, timeout=10)
+        
+        if respuesta.status_code == 200:
+            datos = respuesta.json()
+            
+            if datos.get('status') == 'ok':
+                iaqi = datos['data'].get('iaqi', {})
+                pm25_valor = iaqi.get('pm25', {}).get('v')
+                
+                if pm25_valor is not None:
+                    return round(float(pm25_valor), 2)
+        
+        return None
+    
+    except Exception as e:
+        print(f"[WAQI] Error: {e}")
+        return None
+
+
+def obtener_pm25_openaq():
+    """
+    Consulta OpenAQ (tercera fuente para validacion cruzada).
+    Busca la estacion mas cercana a Navojoa con datos de PM2.5.
+    """
+    
+    try:
+        # Buscar estaciones cercanas a Navojoa con PM2.5
+        parametros = {
+            "coordinates": f"{LATITUD},{LONGITUD}",
+            "radius": 100000,  # 100 km de radio
+            "parameter": "pm25",
+            "limit": 1,
+            "order_by": "distance"
+        }
+        
+        respuesta = requests.get(URL_OPENAQ, params=parametros, timeout=10)
+        
+        if respuesta.status_code == 200:
+            datos = respuesta.json()
+            resultados = datos.get('results', [])
+            
+            if resultados:
+                # Obtener mediciones de la estacion mas cercana
+                ubicacion_id = resultados[0].get('id')
+                
+                if ubicacion_id:
+                    url_mediciones = f"https://api.openaq.org/v3/locations/{ubicacion_id}/latest"
+                    resp_mediciones = requests.get(url_mediciones, timeout=10)
+                    
+                    if resp_mediciones.status_code == 200:
+                        datos_med = resp_mediciones.json()
+                        mediciones = datos_med.get('results', [])
+                        
+                        for medicion in mediciones:
+                            if medicion.get('parameter') == 'pm25':
+                                valor = medicion.get('value')
+                                if valor is not None and valor >= 0:
+                                    return round(float(valor), 2)
+        
+        return None
+    
+    except Exception as e:
+        print(f"[OpenAQ] Error: {e}")
+        return None
 
 
 def obtener_datos_historicos_24h():
