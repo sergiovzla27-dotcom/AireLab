@@ -2,19 +2,19 @@
 AireLab - Modulo de Analisis de Datos
 Procesa los datos de Google Sheets con Pandas y conecta con datos de aire en tiempo real
 """
- 
+
 import os
 import pandas as pd
 from datetime import datetime
 import sys
- 
+
 # Agregar src/ al path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
- 
+
 from openweather import obtener_datos_actuales
 from sheets import leer_encuestas, leer_suscriptores
- 
- 
+
+
 def cargar_encuestas():
     """Carga las encuestas desde Google Sheets como DataFrame."""
     try:
@@ -25,8 +25,8 @@ def cargar_encuestas():
     except Exception as e:
         print(f"Error cargando encuestas desde Sheets: {e}")
         return pd.DataFrame()
- 
- 
+
+
 def cargar_suscriptores():
     """Carga los suscriptores desde Google Sheets como DataFrame."""
     try:
@@ -37,8 +37,8 @@ def cargar_suscriptores():
     except Exception as e:
         print(f"Error cargando suscriptores desde Sheets: {e}")
         return pd.DataFrame()
- 
- 
+
+
 def obtener_stats_publicas():
     """Genera las estadisticas publicas + datos de aire actual"""
     
@@ -146,6 +146,74 @@ def obtener_stats_publicas():
                     if v in vulnerables_count:
                         vulnerables_count[v] += 1
     
+    # Funciones más solicitadas (P13)
+    funciones_count = {'recomendaciones': 0, 'notificaciones': 0, 'alertas': 0, 'historial': 0}
+    if 'funciones' in df.columns:
+        for valor in df['funciones'].dropna():
+            if isinstance(valor, str):
+                for f in valor.split(','):
+                    f = f.strip()
+                    if f in funciones_count:
+                        funciones_count[f] += 1
+    
+    etiquetas_funciones = {
+        'recomendaciones': 'Recomendaciones de salud',
+        'notificaciones': 'Notificaciones celular',
+        'alertas': 'Alertas en tiempo real',
+        'historial': 'Historial contaminación'
+    }
+    funciones_solicitadas = {etiquetas_funciones.get(k, k): v for k, v in funciones_count.items() if v > 0}
+    
+    # Enfermedades en hogares (P9)
+    enfermedades_count = {'asma': 0, 'bronquitis': 0, 'neumonia': 0, 'alergias': 0, 'ninguna': 0}
+    if 'enfermedades' in df.columns:
+        for valor in df['enfermedades'].dropna():
+            if isinstance(valor, str):
+                for e in valor.split(','):
+                    e = e.strip()
+                    if e in enfermedades_count:
+                        enfermedades_count[e] += 1
+    
+    etiquetas_enfermedades = {
+        'asma': 'Asma',
+        'bronquitis': 'Bronquitis',
+        'neumonia': 'Neumonía',
+        'alergias': 'Alergias respiratorias',
+        'ninguna': 'Ninguna'
+    }
+    enfermedades_hogar = {etiquetas_enfermedades.get(k, k): v for k, v in enfermedades_count.items() if v > 0}
+    
+    # Frecuencia al aire libre (P4)
+    frecuencia_aire = {}
+    if 'actividades_aire' in df.columns:
+        conteo = df['actividades_aire'].value_counts()
+        etiquetas_frecuencia = {
+            'todos_dias': 'Todos los días',
+            'varias_semana': 'Varias veces/semana',
+            'ocasional': 'Ocasionalmente',
+            'casi_nunca': 'Casi nunca'
+        }
+        frecuencia_aire = {etiquetas_frecuencia.get(k, k): int(v) for k, v in conteo.items()}
+    
+    # Impedimentos para usar la app (P14)
+    impedimentos_count = {'sin_internet': 0, 'no_confio': 0, 'no_se_usar': 0, 'no_utilidad': 0, 'ninguno': 0}
+    if 'impedimentos' in df.columns:
+        for valor in df['impedimentos'].dropna():
+            if isinstance(valor, str):
+                for i in valor.split(','):
+                    i = i.strip()
+                    if i in impedimentos_count:
+                        impedimentos_count[i] += 1
+    
+    etiquetas_impedimentos = {
+        'sin_internet': 'No tengo internet',
+        'no_confio': 'No confío',
+        'no_se_usar': 'No sé usar apps',
+        'no_utilidad': 'No le veo utilidad',
+        'ninguno': 'Ningún impedimento'
+    }
+    impedimentos_uso = {etiquetas_impedimentos.get(k, k): v for k, v in impedimentos_count.items() if v > 0}
+    
     correlacion = analizar_correlacion(df, datos_aire)
     
     return {
@@ -163,11 +231,15 @@ def obtener_stats_publicas():
         "percepcion_aire": percepcion_aire,
         "meses_enfermos": meses_enfermos,
         "vulnerables": vulnerables_count,
+        "funciones_solicitadas": funciones_solicitadas,
+        "enfermedades_hogar": enfermedades_hogar,
+        "frecuencia_aire": frecuencia_aire,
+        "impedimentos_uso": impedimentos_uso,
         "aire_actual": datos_aire if datos_aire.get('exito') else None,
         "correlacion": correlacion
     }
- 
- 
+
+
 def analizar_correlacion(df, datos_aire):
     """Analiza la posible relacion entre la calidad del aire y los sintomas reportados."""
     
@@ -229,8 +301,8 @@ def analizar_correlacion(df, datos_aire):
         "pct_vulnerables": pct_vulnerables,
         "interpretacion": interpretacion
     }
- 
- 
+
+
 def obtener_stats_admin():
     """Estadisticas detalladas para el panel de admin"""
     

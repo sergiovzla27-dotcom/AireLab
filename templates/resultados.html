@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es" data-tema="claro">
 <head>
     <meta charset="UTF-8">
@@ -54,7 +54,7 @@
         {% if stats.exito %}
 
         <!-- ============================================ -->
-        <!-- NUEVO: AIRE vs ENFERMEDADES (CORRELACION)   -->
+        <!-- AIRE vs ENFERMEDADES (CORRELACION)          -->
         <!-- ============================================ -->
         {% if stats.correlacion %}
         <div class="card correlacion-card">
@@ -67,7 +67,6 @@
             </div>
 
             <div class="correlacion-comparacion">
-                <!-- Lado izquierdo: AIRE AHORA -->
                 <div class="correlacion-lado">
                     <div class="correlacion-label">AIRE AHORITA EN NAVOJOA</div>
                     <div class="correlacion-valor-grande nivel-{{ stats.correlacion.nivel_color }}">
@@ -79,12 +78,10 @@
                     </div>
                 </div>
 
-                <!-- Conector -->
-<div class="correlacion-conector">
-    <i data-lucide="git-compare"></i>
-</div>
+                <div class="correlacion-conector">
+                    <i data-lucide="git-compare"></i>
+                </div>
 
-                <!-- Lado derecho: PERSONAS ENFERMAS -->
                 <div class="correlacion-lado">
                     <div class="correlacion-label">PERSONAS CON SÍNTOMAS</div>
                     <div class="correlacion-valor-grande" style="color: var(--accent-rojo);">
@@ -96,7 +93,6 @@
                 </div>
             </div>
 
-            <!-- Interpretación amigable -->
             <div class="correlacion-interpretacion">
                 <div class="interpretacion-icono">
                     <i data-lucide="lightbulb"></i>
@@ -107,7 +103,6 @@
                 </div>
             </div>
 
-            <!-- Explicación didáctica -->
             <div class="correlacion-explicacion">
                 <h3>¿Por qué importa esta relación?</h3>
                 <div class="explicacion-grid">
@@ -223,7 +218,7 @@
             </div>
         </div>
 
-        <!-- GRÁFICAS -->
+        <!-- GRÁFICAS: EDAD + PERCEPCION -->
         <div class="grid-graficas-2">
             <div class="card">
                 <div class="card-header-stats">
@@ -271,6 +266,94 @@
                     para luego comparar con la contaminación del aire en esos mismos meses.
                 </span>
             </div>
+        </div>
+
+        <!-- ============================================ -->
+        <!-- NUEVAS GRAFICAS                              -->
+        <!-- ============================================ -->
+
+        <!-- FUNCIONES + ENFERMEDADES -->
+        <div class="grid-graficas-2">
+            
+            {% if stats.funciones_solicitadas %}
+            <div class="card">
+                <div class="card-header-stats">
+                    <i data-lucide="layout-grid"></i>
+                    <div>
+                        <h2>¿Qué funciones quieren?</h2>
+                        <p>Lo que la gente espera de AireLab</p>
+                    </div>
+                </div>
+                <div class="grafica-contenedor-mediano">
+                    <canvas id="graficaFunciones"></canvas>
+                </div>
+                <div class="grafica-nota">
+                    <i data-lucide="lightbulb"></i>
+                    <span><strong>¿Para qué sirve?</strong> Nos guía sobre qué priorizar en futuras versiones del proyecto.</span>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if stats.enfermedades_hogar %}
+            <div class="card">
+                <div class="card-header-stats">
+                    <i data-lucide="heart-pulse"></i>
+                    <div>
+                        <h2>¿Qué enfermedades hay?</h2>
+                        <p>Diagnósticos respiratorios en los hogares</p>
+                    </div>
+                </div>
+                <div class="grafica-contenedor-mediano">
+                    <canvas id="graficaEnfermedades"></canvas>
+                </div>
+                <div class="grafica-nota">
+                    <i data-lucide="info"></i>
+                    <span><strong>¿Para qué sirve?</strong> Identifica condiciones crónicas que se agravan con la mala calidad del aire.</span>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- FRECUENCIA + IMPEDIMENTOS -->
+        <div class="grid-graficas-2">
+            
+            {% if stats.frecuencia_aire %}
+            <div class="card">
+                <div class="card-header-stats">
+                    <i data-lucide="footprints"></i>
+                    <div>
+                        <h2>¿Cuánto salen?</h2>
+                        <p>Frecuencia de actividades al aire libre</p>
+                    </div>
+                </div>
+                <div class="grafica-contenedor-mediano">
+                    <canvas id="graficaFrecuencia"></canvas>
+                </div>
+                <div class="grafica-nota">
+                    <i data-lucide="info"></i>
+                    <span><strong>¿Para qué sirve?</strong> Mide qué tan expuestas están las personas al aire de Navojoa.</span>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if stats.impedimentos_uso %}
+            <div class="card">
+                <div class="card-header-stats">
+                    <i data-lucide="x-circle"></i>
+                    <div>
+                        <h2>¿Qué barreras hay?</h2>
+                        <p>Lo que impediría usar la app</p>
+                    </div>
+                </div>
+                <div class="grafica-contenedor-mediano">
+                    <canvas id="graficaImpedimentos"></canvas>
+                </div>
+                <div class="grafica-nota">
+                    <i data-lucide="info"></i>
+                    <span><strong>¿Para qué sirve?</strong> Detecta obstáculos para mejorar la accesibilidad del proyecto.</span>
+                </div>
+            </div>
+            {% endif %}
         </div>
 
         <!-- VULNERABLES -->
@@ -365,7 +448,6 @@
             localStorage.setItem('airelabTema', nuevo);
         }
 
-        // IMPORTANTE: Llamar a lucide.createIcons al final, despues de que todo cargue
         document.addEventListener('DOMContentLoaded', function() {
             lucide.createIcons();
         });
@@ -385,6 +467,7 @@
         };
 
         window.addEventListener('load', function() {
+            // GRAFICA: EDAD
             const datosEdad = {{ stats.distribucion_edad | tojson }};
             if (Object.keys(datosEdad).length > 0) {
                 new Chart(document.getElementById('graficaEdad'), {
@@ -401,6 +484,7 @@
                 });
             }
 
+            // GRAFICA: PERCEPCION DEL AIRE
             const datosAire = {{ stats.percepcion_aire | tojson }};
             if (Object.keys(datosAire).length > 0) {
                 new Chart(document.getElementById('graficaAire'), {
@@ -422,6 +506,7 @@
                 });
             }
 
+            // GRAFICA: MESES ENFERMOS
             const datosMeses = {{ stats.meses_enfermos | tojson }};
             if (Object.keys(datosMeses).length > 0) {
                 new Chart(document.getElementById('graficaMeses'), {
@@ -446,6 +531,100 @@
                     }
                 });
             }
+
+            // GRAFICA: FUNCIONES SOLICITADAS (barras horizontales)
+            {% if stats.funciones_solicitadas %}
+            const datosFunciones = {{ stats.funciones_solicitadas | tojson }};
+            if (Object.keys(datosFunciones).length > 0) {
+                new Chart(document.getElementById('graficaFunciones'), {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(datosFunciones),
+                        datasets: [{
+                            label: 'Personas',
+                            data: Object.values(datosFunciones),
+                            backgroundColor: [colores.primario, colores.secundario, colores.terciario, colores.verde],
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        ...opcionesComun,
+                        indexAxis: 'y',
+                        plugins: { legend: { display: false } },
+                        scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                    }
+                });
+            }
+            {% endif %}
+
+            // GRAFICA: ENFERMEDADES EN HOGAR (barras verticales)
+            {% if stats.enfermedades_hogar %}
+            const datosEnfermedades = {{ stats.enfermedades_hogar | tojson }};
+            if (Object.keys(datosEnfermedades).length > 0) {
+                new Chart(document.getElementById('graficaEnfermedades'), {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(datosEnfermedades),
+                        datasets: [{
+                            label: 'Hogares',
+                            data: Object.values(datosEnfermedades),
+                            backgroundColor: [colores.rojo, colores.naranja, colores.morado, colores.amarillo, colores.verde],
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        ...opcionesComun,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                    }
+                });
+            }
+            {% endif %}
+
+            // GRAFICA: FRECUENCIA AL AIRE LIBRE (dona)
+            {% if stats.frecuencia_aire %}
+            const datosFrecuencia = {{ stats.frecuencia_aire | tojson }};
+            if (Object.keys(datosFrecuencia).length > 0) {
+                new Chart(document.getElementById('graficaFrecuencia'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: Object.keys(datosFrecuencia),
+                        datasets: [{
+                            data: Object.values(datosFrecuencia),
+                            backgroundColor: [colores.rojo, colores.naranja, colores.amarillo, colores.verde],
+                            borderWidth: 2,
+                            borderColor: 'white'
+                        }]
+                    },
+                    options: opcionesComun
+                });
+            }
+            {% endif %}
+
+            // GRAFICA: IMPEDIMENTOS (barras horizontales)
+            {% if stats.impedimentos_uso %}
+            const datosImpedimentos = {{ stats.impedimentos_uso | tojson }};
+            if (Object.keys(datosImpedimentos).length > 0) {
+                new Chart(document.getElementById('graficaImpedimentos'), {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(datosImpedimentos),
+                        datasets: [{
+                            label: 'Personas',
+                            data: Object.values(datosImpedimentos),
+                            backgroundColor: [colores.rojo, colores.naranja, colores.amarillo, colores.terciario, colores.verde],
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        ...opcionesComun,
+                        indexAxis: 'y',
+                        plugins: { legend: { display: false } },
+                        scales: { x: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                    }
+                });
+            }
+            {% endif %}
         });
         {% endif %}
     </script>
