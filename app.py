@@ -59,6 +59,23 @@ def encuesta():
 def alertas():
     return render_template('alertas.html')
 
+@app.route('/soluciones')
+def soluciones():
+    """Pagina de Sistema Experto: soluciones por nivel de aire"""
+    from src.sistema_experto import obtener_soluciones_por_nivel, obtener_todos_los_niveles
+    from src.openweather import obtener_datos_actuales
+    
+    datos_aire = obtener_datos_actuales()
+    pm25_actual = datos_aire.get('pm2_5', 0) if datos_aire.get('exito') else 0
+    
+    nivel_actual = obtener_soluciones_por_nivel(pm25_actual)
+    todos_niveles = obtener_todos_los_niveles()
+    
+    return render_template('soluciones.html',
+                           pm25_actual=pm25_actual,
+                           nivel_actual=nivel_actual,
+                           todos_niveles=todos_niveles,
+                           datos_aire=datos_aire)
 
 @app.route('/sobre')
 def sobre():

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="claro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a5f6f">
+    <title>Plan de Acción - AireLab</title>
+    
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/soluciones.css') }}">
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo-area">
+            <div class="logo-circulo">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="AireLab">
+            </div>
+            <div class="logo-text">
+                <div class="logo-nombre">AireLab</div>
+                <div class="logo-slogan">analizando lo invisible</div>
+            </div>
+        </div>
+        
+        <div class="header-acciones">
+            <nav class="nav-links">
+                <a href="/"><i data-lucide="home"></i><span>Inicio</span></a>
+                <a href="/encuesta"><i data-lucide="clipboard-list"></i><span>Encuesta</span></a>
+                <a href="/alertas"><i data-lucide="bell"></i><span>Alertas</span></a>
+                <a href="/soluciones" class="active"><i data-lucide="shield-check"></i><span>Soluciones</span></a>
+                <a href="/resultados"><i data-lucide="bar-chart-3"></i><span>Resultados</span></a>
+                <a href="/sobre"><i data-lucide="info"></i><span>Sobre</span></a>
+            </nav>
+            <button class="tema-switch" onclick="cambiarTema()">
+                <i data-lucide="moon" class="tema-icono-claro"></i>
+                <i data-lucide="sun" class="tema-icono-oscuro"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- HERO -->
+        <div class="card sol-hero">
+            <div class="sol-hero-icono">
+                <i data-lucide="shield-check"></i>
+            </div>
+            <h1>Plan de Acción</h1>
+            <p class="sol-hero-subtitulo">
+                Según el nivel actual del aire en Navojoa, te recomendamos qué hacer para 
+                proteger tu salud y la de tu comunidad.
+            </p>
+        </div>
+
+        <!-- ESTADO ACTUAL -->
+        <div class="card sol-estado-actual nivel-{{ nivel_actual.color }}">
+            <div class="sol-estado-header">
+                <div class="sol-estado-icono">
+                    <i data-lucide="{{ nivel_actual.icono }}"></i>
+                </div>
+                <div>
+                    <div class="sol-estado-label">SITUACIÓN ACTUAL EN NAVOJOA</div>
+                    <h2>{{ nivel_actual.nombre }}</h2>
+                    <p>PM2.5: <strong>{{ pm25_actual }} µg/m³</strong> · Rango: {{ nivel_actual.rango }}</p>
+                </div>
+            </div>
+            <p class="sol-estado-descripcion">{{ nivel_actual.descripcion }}</p>
+        </div>
+
+        <!-- SOLUCIONES NIVEL ACTUAL -->
+        <div class="sol-soluciones-actual">
+            <div class="sol-titulo-seccion">
+                <i data-lucide="lightbulb"></i>
+                <h2>¿Qué se puede hacer ahora?</h2>
+            </div>
+
+            <div class="sol-grid">
+                <!-- INDIVIDUALES -->
+                <div class="card sol-tipo-card">
+                    <div class="sol-tipo-header sol-individual">
+                        <i data-lucide="user"></i>
+                        <div>
+                            <h3>Para ti y tu familia</h3>
+                            <p>Acciones que puedes tomar hoy mismo</p>
+                        </div>
+                    </div>
+                    <div class="sol-acciones-lista">
+                        {% for accion in nivel_actual.soluciones_individuales %}
+                        <div class="sol-accion-item">
+                            <div class="sol-accion-icono">
+                                <i data-lucide="{{ accion.icono }}"></i>
+                            </div>
+                            <div class="sol-accion-contenido">
+                                <strong>{{ accion.titulo }}</strong>
+                                <p>{{ accion.detalle }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- COMUNITARIAS -->
+                <div class="card sol-tipo-card">
+                    <div class="sol-tipo-header sol-comunitario">
+                        <i data-lucide="users"></i>
+                        <div>
+                            <h3>Para la comunidad</h3>
+                            <p>Acciones colectivas e institucionales</p>
+                        </div>
+                    </div>
+                    <div class="sol-acciones-lista">
+                        {% for accion in nivel_actual.soluciones_comunitarias %}
+                        <div class="sol-accion-item">
+                            <div class="sol-accion-icono">
+                                <i data-lucide="{{ accion.icono }}"></i>
+                            </div>
+                            <div class="sol-accion-contenido">
+                                <strong>{{ accion.titulo }}</strong>
+                                <p>{{ accion.detalle }}</p>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- INFO ADICIONAL -->
+        <div class="card sol-info-experto">
+            <div class="sol-experto-icono">
+                <i data-lucide="brain-circuit"></i>
+            </div>
+            <div>
+                <h2>Recomendaciones automáticas</h2>
+                <p>
+                    AireLab utiliza un <strong>sistema experto</strong> que analiza el nivel actual 
+                    del aire en Navojoa y genera recomendaciones específicas para esa situación. 
+                    Cuando el aire cambia, las recomendaciones cambian automáticamente.
+                </p>
+                <p>
+                    Las acciones <strong>individuales</strong> te dicen qué puedes hacer tú en tu 
+                    casa o en tu día a día. Las acciones <strong>comunitarias</strong> son medidas 
+                    que deberían tomar empresas, escuelas, hospitales o el gobierno municipal.
+                </p>
+            </div>
+        </div>
+
+        <!-- CTA -->
+        <div class="card sol-cta">
+            <div class="sol-cta-icono">
+                <i data-lucide="bell-ring"></i>
+            </div>
+            <h2>¿Quieres recibir avisos automáticos?</h2>
+            <p>Te enviamos un correo cuando el aire cambie y necesites tomar precauciones.</p>
+            <a href="/alertas" class="btn-principal">
+                <i data-lucide="bell"></i>
+                <span>Suscribirme a alertas</span>
+            </a>
+        </div>
+
+    </div>
+
+    <footer class="footer">
+        <div class="footer-contenido">
+            <i data-lucide="wind"></i>
+            <p><strong>AireLab</strong> © 2026 · analizando lo invisible</p>
+        </div>
+        <p>Monitoreo ciudadano · Navojoa, Sonora</p>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script>
+        const temaGuardado = localStorage.getItem('airelabTema') || 'claro';
+        document.documentElement.setAttribute('data-tema', temaGuardado);
+
+        function cambiarTema() {
+            const t = document.documentElement.getAttribute('data-tema');
+            const nuevo = t === 'claro' ? 'oscuro' : 'claro';
+            document.documentElement.setAttribute('data-tema', nuevo);
+            localStorage.setItem('airelabTema', nuevo);
+        }
+
+        lucide.createIcons();
+    </script>
+
+</body>
+</html>

@@ -85,6 +85,10 @@
                     <i data-lucide="bell"></i>
                     <span>Alertas</span>
                 </a>
+                <a href="/soluciones">
+                    <i data-lucide="shield-check"></i>
+                    <span>Soluciones</span>
+                </a>
                 <a href="/resultados">
                     <i data-lucide="bar-chart-3"></i>
                     <span>Resultados</span>
@@ -122,75 +126,6 @@
             </div>
         </div>
 
-        <!-- ============================================ -->
-        <!-- VALIDACION DE FUENTES (multi-source)         -->
-        <!-- ============================================ -->
-        {% if datos.validacion %}
-        <div class="card card-validacion">
-            <div class="validacion-header">
-                <div class="validacion-badge">
-                    <i data-lucide="shield-check"></i>
-                    <span>Validado con {{ datos.validacion.total_fuentes }} {{ 'fuentes' if datos.validacion.total_fuentes > 1 else 'fuente' }}</span>
-                </div>
-                <button class="btn-ayuda" onclick="abrirAyuda('validacion')" title="¿Qué es esto?">
-                    <i data-lucide="help-circle"></i>
-                </button>
-            </div>
-            
-            <p class="validacion-descripcion">
-                Para darte datos más confiables, consultamos varias fuentes independientes y mostramos el promedio.
-            </p>
-            
-            <div class="fuentes-grid">
-                {% if datos.validacion.valores_individuales.openweather is not none %}
-                <div class="fuente-card">
-                    <div class="fuente-header">
-                        <i data-lucide="cloud"></i>
-                        <strong>OpenWeather</strong>
-                    </div>
-                    <div class="fuente-valor">{{ datos.validacion.valores_individuales.openweather }}</div>
-                    <div class="fuente-unidad">µg/m³</div>
-                    <div class="fuente-tipo">Modelado satelital</div>
-                </div>
-                {% endif %}
-                
-                {% if datos.validacion.valores_individuales.waqi is not none %}
-                <div class="fuente-card">
-                    <div class="fuente-header">
-                        <i data-lucide="radio-tower"></i>
-                        <strong>WAQI</strong>
-                    </div>
-                    <div class="fuente-valor">{{ datos.validacion.valores_individuales.waqi }}</div>
-                    <div class="fuente-unidad">µg/m³</div>
-                    <div class="fuente-tipo">Sensores físicos</div>
-                </div>
-                {% endif %}
-                
-                {% if datos.validacion.valores_individuales.openaq is not none %}
-                <div class="fuente-card">
-                    <div class="fuente-header">
-                        <i data-lucide="globe"></i>
-                        <strong>OpenAQ</strong>
-                    </div>
-                    <div class="fuente-valor">{{ datos.validacion.valores_individuales.openaq }}</div>
-                    <div class="fuente-unidad">µg/m³</div>
-                    <div class="fuente-tipo">Red global abierta</div>
-                </div>
-                {% endif %}
-                
-                <div class="fuente-card fuente-promedio">
-                    <div class="fuente-header">
-                        <i data-lucide="check-circle-2"></i>
-                        <strong>Promedio</strong>
-                    </div>
-                    <div class="fuente-valor">{{ datos.pm2_5 }}</div>
-                    <div class="fuente-unidad">µg/m³</div>
-                    <div class="fuente-tipo">Valor mostrado</div>
-                </div>
-            </div>
-        </div>
-        {% endif %}
-
         <!-- Grid principal: AQI + Recomendaciones -->
         <div class="grid-principal">
             
@@ -212,7 +147,19 @@
                 
                 <div class="aqi-barra-simple">
                     <div class="barra-medidor">
-                        <div class="indicador" style="left: {{ [datos.pm2_5 / 200 * 100, 98]|min }}%;"></div>
+                        {% set pm = datos.pm2_5 %}
+                        {% if pm <= 12 %}
+                            {% set pos = (pm / 12 * 18)|round(0) %}
+                        {% elif pm <= 35 %}
+                            {% set pos = (18 + ((pm - 12) / 23 * 17))|round(0) %}
+                        {% elif pm <= 55 %}
+                            {% set pos = (35 + ((pm - 35) / 20 * 20))|round(0) %}
+                        {% elif pm <= 150 %}
+                            {% set pos = (55 + ((pm - 55) / 95 * 27))|round(0) %}
+                        {% else %}
+                            {% set pos = 95 %}
+                        {% endif %}
+                        <div class="indicador" style="left: {{ [pos, 98]|min }}%;"></div>
                     </div>
                     <div class="etiquetas-barra">
                         <span>Limpio</span>
@@ -273,8 +220,21 @@
             <div class="grafica-contenedor">
                 <canvas id="graficaHistorica"></canvas>
             </div>
+            
+            <!-- NOTA: Fuente del dato -->
+            <div class="grafica-info-fuente">
+                <div class="info-fuente-icono">
+                    <i data-lucide="info"></i>
+                </div>
+                <div class="info-fuente-texto">
+                    <strong>Sobre los datos</strong>
+                    <p>
+                        Los datos del aire en AireLab provienen de <strong>OpenWeather</strong>, una plataforma global especializada que estima la calidad del aire para las coordenadas exactas de Navojoa mediante modelado satelital y meteorológico.
+                    </p>
+                </div>
+            </div>
         </div>
-
+        
         <!-- Mapa -->
         <div class="card card-mapa-real" id="seccionMapa">
             <div class="card-header-simple">
@@ -333,9 +293,7 @@
             </p>
         </div>
 
-        <!-- ============================================ -->
-        <!-- MINI RESULTADOS DE LA INVESTIGACION          -->
-        <!-- ============================================ -->
+        <!-- MINI RESULTADOS DE LA INVESTIGACION -->
         {% if stats and stats.exito and stats.total_respuestas > 0 %}
         <div class="card mini-resultados-card">
             <div class="mini-resultados-header">
@@ -435,7 +393,6 @@
         </div>
     </div>
 
-    <!-- Librerías -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -462,31 +419,11 @@
         }
 
         const pasosTour = [
-            {
-                selector: '#seccionAQI',
-                titulo: '¿Cómo está el aire?',
-                texto: 'Aquí te decimos en palabras sencillas cómo está el aire ahorita.'
-            },
-            {
-                selector: '#seccionRecomendaciones',
-                titulo: 'Recomendaciones para ti',
-                texto: 'Esta sección te dice qué puedes hacer hoy.'
-            },
-            {
-                selector: '#seccionGrafica',
-                titulo: 'Cómo ha estado hoy',
-                texto: 'Esta gráfica muestra cómo ha estado el aire durante el día.'
-            },
-            {
-                selector: '#seccionContaminantes',
-                titulo: 'Otras cosas en el aire',
-                texto: 'Medimos otros gases también. Haz clic para saber más.'
-            },
-            {
-                selector: '#seccionCTA',
-                titulo: '¡Suscríbete a avisos!',
-                texto: 'Te mandamos mensajes cuando el aire sea peligroso.'
-            }
+            { selector: '#seccionAQI', titulo: '¿Cómo está el aire?', texto: 'Aquí te decimos en palabras sencillas cómo está el aire ahorita.' },
+            { selector: '#seccionRecomendaciones', titulo: 'Recomendaciones para ti', texto: 'Esta sección te dice qué puedes hacer hoy.' },
+            { selector: '#seccionGrafica', titulo: 'Cómo ha estado hoy', texto: 'Esta gráfica muestra cómo ha estado el aire durante el día.' },
+            { selector: '#seccionContaminantes', titulo: 'Otras cosas en el aire', texto: 'Medimos otros gases también. Haz clic para saber más.' },
+            { selector: '#seccionCTA', titulo: '¡Suscríbete a avisos!', texto: 'Te mandamos mensajes cuando el aire sea peligroso.' }
         ];
         
         let pasoActual = 0;
@@ -542,10 +479,6 @@
             'general': {
                 titulo: '¿Cómo uso AireLab?',
                 contenido: '<p><strong>AireLab te ayuda a cuidar tu salud.</strong></p><ul><li><strong>Mira el círculo grande:</strong> te dice cómo está el aire ahora.</li><li><strong>Lee las recomendaciones:</strong> te dicen qué hacer hoy.</li><li><strong>Suscríbete a avisos:</strong> te avisamos cuando sea peligroso.</li></ul>'
-            },
-            'validacion': {
-                titulo: '¿Por qué varias fuentes?',
-                contenido: '<p>Para que confíes en nuestros datos, los <strong>validamos con varias fuentes independientes</strong>:</p><ul><li><strong>OpenWeather:</strong> usa modelos satelitales globales.</li><li><strong>WAQI:</strong> usa sensores físicos en el mundo.</li><li><strong>OpenAQ:</strong> red global abierta de monitoreo.</li></ul><p>Mostramos el <strong>promedio</strong> de las fuentes disponibles. Esto se llama <em>validación cruzada</em> y es estándar en investigación científica.</p>'
             },
             'pm25': {
                 titulo: '¿Qué es el PM2.5?',

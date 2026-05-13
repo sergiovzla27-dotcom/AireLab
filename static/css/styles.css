@@ -1671,3 +1671,54 @@ body .modal-overlay {
 [data-tema="oscuro"] .fuente-card:not(.fuente-promedio) {
     background: rgba(255, 255, 255, 0.03);
 }
+/* ============================================
+   NOTA DE FUENTE EN GRAFICA HISTORICA
+   ============================================ */
+
+.grafica-info-fuente {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    background: var(--bg-info);
+    border-left: 3px solid var(--accent-secundario);
+    padding: 14px 18px;
+    border-radius: 10px;
+    margin-top: 20px;
+}
+
+.info-fuente-icono {
+    width: 36px;
+    height: 36px;
+    background: var(--accent-secundario);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.info-fuente-icono [data-lucide] {
+    width: 18px;
+    height: 18px;
+    color: white;
+}
+
+.info-fuente-texto > strong:first-child {
+    display: block;
+    color: var(--texto-principal);
+    font-size: 0.95em;
+    margin-bottom: 4px;
+    font-weight: 700;
+}
+
+.info-fuente-texto p {
+    color: var(--texto-secundario);
+    font-size: 0.85em;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.info-fuente-texto p strong {
+    color: var(--accent-primario);
+    font-weight: 700;
+}
