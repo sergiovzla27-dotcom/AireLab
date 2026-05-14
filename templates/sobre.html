@@ -41,7 +41,10 @@
                     <i data-lucide="shield-check"></i>
                     <span>Soluciones</span>
                 </a>
-                <a href="/asistente"><i data-lucide="bot"></i><span>Asistente</span></a>
+                <a href="/asistente">
+                    <i data-lucide="bot"></i>
+                    <span>Asistente</span>
+                </a>
                 <a href="/resultados">
                     <i data-lucide="bar-chart-3"></i>
                     <span>Resultados</span>
@@ -73,7 +76,7 @@
             </p>
             <div class="sobre-hero-tags">
                 <span class="tag-hero"><i data-lucide="map-pin"></i> Navojoa, Sonora</span>
-                <span class="tag-hero"><i data-lucide="calendar"></i> Marzo 2026 - Abril 2026</span>
+                <span class="tag-hero"><i data-lucide="calendar"></i> Marzo 2026 - Mayo 2026</span>
                 <span class="tag-hero"><i data-lucide="users"></i> Proyecto académico</span>
             </div>
         </section>
@@ -141,18 +144,18 @@
                 
                 <div class="solucion-card">
                     <div class="solucion-icono terciario">
-                        <i data-lucide="trending-up"></i>
+                        <i data-lucide="brain-circuit"></i>
                     </div>
-                    <h3>Análisis de correlación</h3>
-                    <p>Cruzamos datos del aire con síntomas de la población para encontrar patrones.</p>
+                    <h3>Sistema experto</h3>
+                    <p>Recomendaciones automáticas según el nivel del aire, basadas en reglas SI-ENTONCES.</p>
                 </div>
                 
                 <div class="solucion-card">
                     <div class="solucion-icono morado">
-                        <i data-lucide="users"></i>
+                        <i data-lucide="bot"></i>
                     </div>
-                    <h3>Investigación abierta</h3>
-                    <p>Resultados públicos para que la comunidad y autoridades tomen decisiones informadas.</p>
+                    <h3>Asistente con IA</h3>
+                    <p>Un chatbot inteligente que responde dudas sobre el aire y la salud en tiempo real.</p>
                 </div>
             </div>
         </section>
@@ -199,67 +202,7 @@
             </div>
         </section>
 
-        <!-- TECNOLOGÍAS -->
-        <section class="card sobre-card">
-            <div class="sobre-icono-grande naranja">
-                <i data-lucide="code-2"></i>
-            </div>
-            <h2>Tecnologías utilizadas</h2>
-            <p class="sobre-card-subtitulo">
-                AireLab está construido con tecnologías abiertas y modernas:
-            </p>
-            
-            <div class="tecnologias-grid">
-                <div class="tech-card">
-                    <i data-lucide="server"></i>
-                    <strong>Python + Flask</strong>
-                    <span>Servidor web</span>
-                </div>
-                <div class="tech-card">
-                    <i data-lucide="database"></i>
-                    <strong>Pandas</strong>
-                    <span>Análisis de datos</span>
-                </div>
-                <div class="tech-card">
-                    <i data-lucide="cloud"></i>
-                    <strong>OpenWeather API</strong>
-                    <span>Datos del aire</span>
-                </div>
-                <div class="tech-card">
-                    <i data-lucide="table-2"></i>
-                    <strong>Google Sheets</strong>
-                    <span>Base de datos persistente</span>
-                </div>
-                <div class="tech-card">
-                    <i data-lucide="bar-chart-3"></i>
-                    <strong>Chart.js</strong>
-                    <span>Gráficas</span>
-                </div>
-                <div class="tech-card">
-                    <i data-lucide="map"></i>
-                    <strong>Leaflet.js</strong>
-                    <span>Mapas interactivos</span>
-                </div>
-                <div class="tech-card">
-                    <i data-lucide="mail"></i>
-                    <strong>Gmail SMTP</strong>
-                    <span>Notificaciones</span>
-                </div>
-                <div class="tech-card">
-                    <i data-lucide="cloud-cog"></i>
-                    <strong>Render</strong>
-                    <span>Hosting en la nube</span>
-                </div>
-            </div>
-        </section>
-
-        <!-- EQUIPO -->
-        <section class="card sobre-card">
-            <div class="sobre-icono-grande primario">
-                <i data-lucide="user-circle"></i>
-            </div>
-            <h2>Equipo</h2>
-            <!-- ============================================ -->
+        <!-- ============================================ -->
         <!-- PIPELINE DE DATOS (Big Data)                -->
         <!-- ============================================ -->
         <section class="card sobre-card">
@@ -282,18 +225,16 @@
                         <i data-lucide="download-cloud"></i>
                     </div>
                     <div class="pipeline-contenido">
-                        <h3>Recolección multi-fuente</h3>
-                        <p>Capturamos datos en paralelo desde tres fuentes ambientales independientes y de la encuesta ciudadana.</p>
+                        <h3>Recolección de datos</h3>
+                        <p>Capturamos datos ambientales desde OpenWeather API y respuestas de la encuesta ciudadana, de forma automatizada.</p>
                         <div class="pipeline-tags">
-                            <span class="pipeline-tag">OpenWeather</span>
-                            <span class="pipeline-tag">WAQI</span>
-                            <span class="pipeline-tag">OpenAQ</span>
-                            <span class="pipeline-tag">Google Sheets</span>
+                            <span class="pipeline-tag">OpenWeather API</span>
+                            <span class="pipeline-tag">Encuesta ciudadana</span>
+                            <span class="pipeline-tag">Captura por hora</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- FLECHA -->
                 <div class="pipeline-flecha">
                     <i data-lucide="arrow-down"></i>
                 </div>
@@ -308,14 +249,13 @@
                         <h3>Almacenamiento en la nube</h3>
                         <p>Los datos se guardan en Google Sheets, accesibles para todo el equipo en tiempo real desde cualquier dispositivo.</p>
                         <div class="pipeline-tags">
-                            <span class="pipeline-tag">Cloud Storage</span>
+                            <span class="pipeline-tag">Google Sheets</span>
                             <span class="pipeline-tag">Tiempo real</span>
                             <span class="pipeline-tag">Respaldo automático</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- FLECHA -->
                 <div class="pipeline-flecha">
                     <i data-lucide="arrow-down"></i>
                 </div>
@@ -328,16 +268,15 @@
                     </div>
                     <div class="pipeline-contenido">
                         <h3>Procesamiento con Pandas</h3>
-                        <p>Limpiamos, transformamos y agrupamos los datos con Pandas. Calculamos promedios entre fuentes para validación cruzada.</p>
+                        <p>Limpiamos, transformamos y agrupamos los datos con Pandas para dejarlos listos para el análisis.</p>
                         <div class="pipeline-tags">
                             <span class="pipeline-tag">Limpieza</span>
+                            <span class="pipeline-tag">Transformación</span>
                             <span class="pipeline-tag">Agrupación</span>
-                            <span class="pipeline-tag">Validación cruzada</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- FLECHA -->
                 <div class="pipeline-flecha">
                     <i data-lucide="arrow-down"></i>
                 </div>
@@ -359,7 +298,6 @@
                     </div>
                 </div>
 
-                <!-- FLECHA -->
                 <div class="pipeline-flecha">
                     <i data-lucide="arrow-down"></i>
                 </div>
@@ -381,7 +319,6 @@
                     </div>
                 </div>
 
-                <!-- FLECHA -->
                 <div class="pipeline-flecha">
                     <i data-lucide="arrow-down"></i>
                 </div>
@@ -414,14 +351,84 @@
                     <strong>Esto es Big Data aplicado</strong>
                     <p>
                         AireLab no solo guarda información: aplica conceptos clave de Big Data como 
-                        <strong>ingestión multi-fuente</strong>, <strong>validación cruzada</strong>, 
-                        <strong>procesamiento en tiempo real</strong>, <strong>análisis de correlación</strong> 
-                        y <strong>toma de decisiones automatizada</strong>. Cada decisión del sistema 
-                        está respaldada por datos procesados.
+                        <strong>ingestión de datos</strong>, <strong>procesamiento en tiempo real</strong>, 
+                        <strong>análisis de correlación</strong> y <strong>toma de decisiones automatizada</strong>. 
+                        Cada decisión del sistema está respaldada por datos procesados.
                     </p>
                 </div>
             </div>
         </section>
+
+        <!-- TECNOLOGÍAS -->
+        <section class="card sobre-card">
+            <div class="sobre-icono-grande naranja">
+                <i data-lucide="code-2"></i>
+            </div>
+            <h2>Tecnologías utilizadas</h2>
+            <p class="sobre-card-subtitulo">
+                AireLab está construido con tecnologías abiertas y modernas:
+            </p>
+            
+            <div class="tecnologias-grid">
+                <div class="tech-card">
+                    <i data-lucide="server"></i>
+                    <strong>Python + Flask</strong>
+                    <span>Servidor web</span>
+                </div>
+                <div class="tech-card">
+                    <i data-lucide="database"></i>
+                    <strong>Pandas</strong>
+                    <span>Análisis de datos</span>
+                </div>
+                <div class="tech-card">
+                    <i data-lucide="cloud"></i>
+                    <strong>OpenWeather API</strong>
+                    <span>Datos del aire</span>
+                </div>
+                <div class="tech-card">
+                    <i data-lucide="table-2"></i>
+                    <strong>Google Sheets API</strong>
+                    <span>Base de datos en la nube</span>
+                </div>
+                <div class="tech-card">
+                    <i data-lucide="bot"></i>
+                    <strong>Gemini AI</strong>
+                    <span>Asistente inteligente</span>
+                </div>
+                <div class="tech-card">
+                    <i data-lucide="bar-chart-3"></i>
+                    <strong>Chart.js</strong>
+                    <span>Gráficas</span>
+                </div>
+                <div class="tech-card">
+                    <i data-lucide="map"></i>
+                    <strong>Leaflet.js</strong>
+                    <span>Mapas interactivos</span>
+                </div>
+                <div class="tech-card">
+                    <i data-lucide="mail"></i>
+                    <strong>Gmail SMTP</strong>
+                    <span>Notificaciones por correo</span>
+                </div>
+                <div class="tech-card">
+                    <i data-lucide="cloud-cog"></i>
+                    <strong>PythonAnywhere</strong>
+                    <span>Hosting en la nube</span>
+                </div>
+                <div class="tech-card">
+                    <i data-lucide="git-branch"></i>
+                    <strong>GitHub</strong>
+                    <span>Control de versiones</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- EQUIPO -->
+        <section class="card sobre-card">
+            <div class="sobre-icono-grande primario">
+                <i data-lucide="user-circle"></i>
+            </div>
+            <h2>Equipo</h2>
             <p class="sobre-card-subtitulo">
                 AireLab fue desarrollado de manera colaborativa por tres estudiantes universitarios
                 de Navojoa, trabajando juntos en todas las etapas del proyecto: investigación,
@@ -470,7 +477,7 @@
                     <i data-lucide="alert-circle"></i>
                     <div>
                         <strong>Datos satelitales</strong>
-                        <span>Los datos provienen de OpenWeather API, no de sensores físicos en Navojoa. Se necesitarían estaciones locales para mayor precisión.</span>
+                        <span>Los datos provienen de OpenWeather API, que estima la calidad del aire mediante modelado satelital y meteorológico, no de sensores físicos en Navojoa. Se necesitarían estaciones locales para mayor precisión.</span>
                     </div>
                 </div>
                 
@@ -486,7 +493,7 @@
                     <i data-lucide="rocket"></i>
                     <div>
                         <strong>Próximos pasos</strong>
-                        <span>Implementar alertas por WhatsApp, integrar más fuentes de datos, expandir a otras ciudades del sur de Sonora.</span>
+                        <span>Implementar alertas por WhatsApp, integrar sensores físicos locales, expandir el monitoreo a otras ciudades del sur de Sonora.</span>
                     </div>
                 </div>
             </div>
@@ -513,13 +520,15 @@
     <footer class="footer">
         <div class="footer-contenido">
             <i data-lucide="wind"></i>
-            <p><strong>AireLab</strong> · analizando lo invisible · Navojoa, Sonora 2024-2026</p>
+            <p><strong>AireLab</strong> · analizando lo invisible · Navojoa, Sonora 2026</p>
         </div>
     </footer>
 
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/asistente.css') }}">
+    <script src="{{ url_for('static', filename='js/asistente-widget.js') }}"></script>
     <script>
-        const temaGuardado = localStorage.getItem('airelabTema') || 'oscuro';
+        const temaGuardado = localStorage.getItem('airelabTema') || 'claro';
         document.documentElement.setAttribute('data-tema', temaGuardado);
 
         function cambiarTema() {
