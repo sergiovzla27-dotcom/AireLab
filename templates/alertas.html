@@ -41,6 +41,7 @@
                     <i data-lucide="shield-check"></i>
                     <span>Soluciones</span>
                 </a>
+                <a href="/asistente"><i data-lucide="bot"></i><span>Asistente</span></a>
                 <a href="/resultados">
                     <i data-lucide="bar-chart-3"></i>
                     <span>Resultados</span>
@@ -481,6 +482,9 @@
                 }
             }
         </script>
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/asistente.css') }}">
+    <script src="{{ url_for('static', filename='js/asistente-widget.js') }}"></script>
 
     </body>
     </html>

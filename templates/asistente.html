@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es" data-tema="claro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1a5f6f">
+    <title>Asistente IA - AireLab</title>
+    
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/asistente.css') }}">
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo-area">
+            <div class="logo-circulo">
+                <img src="{{ url_for('static', filename='img/logo.png') }}" alt="AireLab">
+            </div>
+            <div class="logo-text">
+                <div class="logo-nombre">AireLab</div>
+                <div class="logo-slogan">analizando lo invisible</div>
+            </div>
+        </div>
+        
+        <div class="header-acciones">
+            <nav class="nav-links">
+                <a href="/"><i data-lucide="home"></i><span>Inicio</span></a>
+                <a href="/encuesta"><i data-lucide="clipboard-list"></i><span>Encuesta</span></a>
+                <a href="/alertas"><i data-lucide="bell"></i><span>Alertas</span></a>
+                <a href="/soluciones"><i data-lucide="shield-check"></i><span>Soluciones</span></a>
+                <a href="/asistente" class="active"><i data-lucide="bot"></i><span>Asistente</span></a>
+                <a href="/resultados"><i data-lucide="bar-chart-3"></i><span>Resultados</span></a>
+                <a href="/sobre"><i data-lucide="info"></i><span>Sobre</span></a>
+            </nav>
+            <button class="tema-switch" onclick="cambiarTema()">
+                <i data-lucide="moon" class="tema-icono-claro"></i>
+                <i data-lucide="sun" class="tema-icono-oscuro"></i>
+            </button>
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- HERO -->
+        <div class="card asis-hero">
+            <div class="asis-hero-icono">
+                <i data-lucide="bot"></i>
+            </div>
+            <h1>Asistente Virtual de AireLab</h1>
+            <p class="asis-hero-subtitulo">
+                Pregúntame cualquier cosa sobre la calidad del aire en Navojoa, 
+                recomendaciones de salud o cómo usar AireLab.
+            </p>
+        </div>
+
+        <!-- CHAT PRINCIPAL -->
+        <div class="card asis-chat-card">
+            
+            <!-- Estado actual del aire (contexto) -->
+            {% if datos.exito %}
+            <div class="asis-contexto nivel-{{ datos.nivel.color }}">
+                <i data-lucide="{{ datos.nivel.icono }}"></i>
+                <div>
+                    <strong>Aire ahora:</strong> {{ datos.nivel.texto }} 
+                    (PM2.5: {{ datos.pm2_5 }} µg/m³)
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- ÁREA DE MENSAJES -->
+            <div class="asis-mensajes" id="mensajesChat">
+                
+                <!-- Mensaje inicial del bot -->
+                <div class="msg msg-bot">
+                    <div class="msg-avatar">
+                        <i data-lucide="bot"></i>
+                    </div>
+                    <div class="msg-burbuja">
+                        <p>¡Hola! Soy el asistente virtual de AireLab.</p>
+                        <p>Puedo ayudarte con preguntas sobre la calidad del aire, recomendaciones de salud, o cómo funciona el proyecto. ¿En qué te ayudo?</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- PREGUNTAS SUGERIDAS -->
+            <div class="asis-sugerencias" id="sugerencias">
+                <p class="sugerencias-titulo">
+                    <i data-lucide="sparkles"></i>
+                    Pruébame con estas preguntas:
+                </p>
+                <div class="sugerencias-grid">
+                    <button class="sugerencia-btn" onclick="enviarSugerencia('¿Qué es el PM2.5?')">
+                        ¿Qué es el PM2.5?
+                    </button>
+                    <button class="sugerencia-btn" onclick="enviarSugerencia('¿Puedo salir a correr hoy?')">
+                        ¿Puedo salir a correr hoy?
+                    </button>
+                    <button class="sugerencia-btn" onclick="enviarSugerencia('¿Cómo me suscribo a las alertas?')">
+                        ¿Cómo me suscribo a las alertas?
+                    </button>
+                    <button class="sugerencia-btn" onclick="enviarSugerencia('¿De dónde sacan los datos?')">
+                        ¿De dónde sacan los datos?
+                    </button>
+                </div>
+            </div>
+
+            <!-- INPUT -->
+            <form class="asis-form" onsubmit="enviarPregunta(event)">
+                <input 
+                    type="text" 
+                    id="inputPregunta" 
+                    class="asis-input" 
+                    placeholder="Escribe tu pregunta aquí..."
+                    autocomplete="off"
+                    maxlength="300"
+                >
+                <button type="submit" class="asis-btn-enviar" id="btnEnviar">
+                    <i data-lucide="send"></i>
+                </button>
+            </form>
+
+            <p class="asis-disclaimer">
+                <i data-lucide="info"></i>
+                <span>El asistente puede cometer errores. No reemplaza atención médica profesional.</span>
+            </p>
+        </div>
+
+    </div>
+
+    <footer class="footer">
+        <div class="footer-contenido">
+            <i data-lucide="wind"></i>
+            <p><strong>AireLab</strong> © 2026 · analizando lo invisible</p>
+        </div>
+        <p>Monitoreo ciudadano · Navojoa, Sonora</p>
+    </footer>
+
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script>
+        const temaGuardado = localStorage.getItem('airelabTema') || 'claro';
+        document.documentElement.setAttribute('data-tema', temaGuardado);
+
+        function cambiarTema() {
+            const t = document.documentElement.getAttribute('data-tema');
+            const nuevo = t === 'claro' ? 'oscuro' : 'claro';
+            document.documentElement.setAttribute('data-tema', nuevo);
+            localStorage.setItem('airelabTema', nuevo);
+        }
+
+        lucide.createIcons();
+
+        const mensajesDiv = document.getElementById('mensajesChat');
+        const inputPregunta = document.getElementById('inputPregunta');
+        const btnEnviar = document.getElementById('btnEnviar');
+        const sugerencias = document.getElementById('sugerencias');
+
+        function agregarMensaje(texto, tipo) {
+            const div = document.createElement('div');
+            div.className = 'msg msg-' + tipo;
+            
+            const iconoSrc = tipo === 'bot' ? 'bot' : 'user';
+            
+            div.innerHTML = `
+                <div class="msg-avatar">
+                    <i data-lucide="${iconoSrc}"></i>
+                </div>
+                <div class="msg-burbuja">
+                    <p>${texto.replace(/\n/g, '<br>')}</p>
+                </div>
+            `;
+            
+            mensajesDiv.appendChild(div);
+            lucide.createIcons();
+            
+            // Scroll al final
+            mensajesDiv.scrollTop = mensajesDiv.scrollHeight;
+        }
+
+        function agregarPensando() {
+            const div = document.createElement('div');
+            div.className = 'msg msg-bot msg-pensando';
+            div.id = 'msgPensando';
+            div.innerHTML = `
+                <div class="msg-avatar">
+                    <i data-lucide="bot"></i>
+                </div>
+                <div class="msg-burbuja">
+                    <div class="dots-pensando">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
+            `;
+            mensajesDiv.appendChild(div);
+            lucide.createIcons();
+            mensajesDiv.scrollTop = mensajesDiv.scrollHeight;
+        }
+
+        function quitarPensando() {
+            const p = document.getElementById('msgPensando');
+            if (p) p.remove();
+        }
+
+        async function enviarPregunta(event) {
+            if (event) event.preventDefault();
+            
+            const pregunta = inputPregunta.value.trim();
+            if (!pregunta) return;
+            
+            // Ocultar sugerencias después de la primera pregunta
+            if (sugerencias) sugerencias.style.display = 'none';
+            
+            // Agregar pregunta del usuario
+            agregarMensaje(pregunta, 'user');
+            inputPregunta.value = '';
+            btnEnviar.disabled = true;
+            
+            // Mostrar "pensando..."
+            agregarPensando();
+            
+            try {
+                const respuesta = await fetch('/api/chatbot', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ pregunta: pregunta })
+                });
+                
+                const data = await respuesta.json();
+                quitarPensando();
+                
+                if (data.exito || data.respuesta) {
+                    agregarMensaje(data.respuesta, 'bot');
+                } else {
+                    agregarMensaje('Lo siento, hubo un error. Intenta de nuevo.', 'bot');
+                }
+            } catch (error) {
+                quitarPensando();
+                agregarMensaje('No pude conectarme. Verifica tu internet e intenta de nuevo.', 'bot');
+                console.error(error);
+            }
+            
+            btnEnviar.disabled = false;
+            inputPregunta.focus();
+        }
+
+        function enviarSugerencia(texto) {
+            inputPregunta.value = texto;
+            enviarPregunta();
+        }
+
+        // Focus inicial
+        inputPregunta.focus();
+    </script>
+
+</body>
+</html>

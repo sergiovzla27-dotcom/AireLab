@@ -9,6 +9,7 @@
     <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/logo.png') }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/asistente.css') }}">
 </head>
 <body>
 
@@ -89,6 +90,7 @@
                     <i data-lucide="shield-check"></i>
                     <span>Soluciones</span>
                 </a>
+                <a href="/asistente"><i data-lucide="bot"></i><span>Asistente</span></a>
                 <a href="/resultados">
                     <i data-lucide="bar-chart-3"></i>
                     <span>Resultados</span>
@@ -373,6 +375,11 @@
         <p>Monitoreo ciudadano · Navojoa, Sonora</p>
     </footer>
 
+    <!-- BOTÓN FLOTANTE DEL ASISTENTE IA -->
+    <a href="/asistente" class="btn-asistente-flotante" title="Pregúntame algo">
+        <i data-lucide="bot"></i>
+    </a>
+
     <!-- BOTÓN DE AYUDA FLOTANTE -->
     <button class="btn-ayuda-flotante" onclick="abrirAyuda('general')" title="¿Necesitas ayuda?">
         <i data-lucide="help-circle"></i>
@@ -650,6 +657,9 @@
         {% endif %}
         {% endif %}
     </script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/asistente.css') }}">
+    <script src="{{ url_for('static', filename='js/asistente-widget.js') }}"></script>
 
 </body>
 </html>

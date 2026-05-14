@@ -62,8 +62,7 @@ def alertas():
 @app.route('/soluciones')
 def soluciones():
     """Pagina de Sistema Experto: soluciones por nivel de aire"""
-    from src.sistema_experto import obtener_soluciones_por_nivel, obtener_todos_los_niveles
-    from src.openweather import obtener_datos_actuales
+    from sistema_experto import obtener_soluciones_por_nivel, obtener_todos_los_niveles
     
     datos_aire = obtener_datos_actuales()
     pm25_actual = datos_aire.get('pm2_5', 0) if datos_aire.get('exito') else 0
@@ -76,6 +75,55 @@ def soluciones():
                            nivel_actual=nivel_actual,
                            todos_niveles=todos_niveles,
                            datos_aire=datos_aire)
+
+@app.route('/asistente')
+def asistente():
+    """Pagina del asistente IA"""
+    datos_aire = obtener_datos_actuales()
+
+    return render_template('asistente.html', datos=datos_aire)
+
+
+@app.route('/api/chatbot', methods=['POST'])
+def chatbot_api():
+    """Endpoint del chatbot"""
+    from chatbot import procesar_pregunta
+
+    datos = request.get_json()
+    pregunta = datos.get('pregunta', '')
+    
+    if not pregunta:
+        return jsonify({"exito": False, "respuesta": "Pregunta vacía"})
+    
+    # Limite por sesion (anti-abuso)
+    from flask import session
+    contador = session.get('chatbot_count', 0)
+    if contador >= 15:
+        return jsonify({
+            "exito": True,
+            "respuesta": "Has alcanzado el límite de preguntas por hoy (15). Por favor regresa mañana o explora las secciones del sitio. ¡Gracias!",
+            "fuente": "limite"
+        })
+    
+    # Obtener contexto del aire
+    datos_aire = obtener_datos_actuales()
+    contexto = {}
+    if datos_aire.get('exito'):
+        contexto = {
+            'pm2_5': datos_aire.get('pm2_5'),
+            'nivel_texto': datos_aire.get('nivel', {}).get('texto'),
+            'nivel_color': datos_aire.get('nivel', {}).get('color'),
+            'fecha': datos_aire.get('fecha')
+        }
+    
+    # Procesar
+    resultado = procesar_pregunta(pregunta, contexto)
+    
+    # Solo contar si fue a Gemini (las reglas no cuentan)
+    if resultado.get('fuente') == 'gemini':
+        session['chatbot_count'] = contador + 1
+    
+    return jsonify(resultado)
 
 @app.route('/sobre')
 def sobre():
@@ -394,4 +442,4 @@ if __name__ == '__main__':
     print("Abre tu navegador en: http://localhost:5000")
     print("Panel de admin: http://localhost:5000/admin")
     print("=" * 50)
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5000, use_reloader=False)

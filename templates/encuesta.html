@@ -44,8 +44,9 @@
                 </a>
                 <a href="/resultados">
                     <i data-lucide="bar-chart-3"></i>
-                    <span>Resultados</span>
+                    <span>Resultados</span>               
                 </a>
+                <a href="/asistente"><i data-lucide="bot"></i><span>Asistente</span></a>
                 <a href="/sobre">
                     <i data-lucide="info"></i>
                     <span>Sobre</span>
@@ -547,6 +548,9 @@
             }
         }
     </script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/asistente.css') }}">
+    <script src="{{ url_for('static', filename='js/asistente-widget.js') }}"></script>
 
 </body>
 </html>

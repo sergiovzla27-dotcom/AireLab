@@ -29,6 +29,7 @@
                 <a href="/encuesta"><i data-lucide="clipboard-list"></i><span>Encuesta</span></a>
                 <a href="/alertas"><i data-lucide="bell"></i><span>Alertas</span></a>
                 <a href="/soluciones" class="active"><i data-lucide="shield-check"></i><span>Soluciones</span></a>
+                <a href="/asistente"><i data-lucide="bot"></i><span>Asistente</span></a>
                 <a href="/resultados"><i data-lucide="bar-chart-3"></i><span>Resultados</span></a>
                 <a href="/sobre"><i data-lucide="info"></i><span>Sobre</span></a>
             </nav>
@@ -183,6 +184,9 @@
 
         lucide.createIcons();
     </script>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/asistente.css') }}">
+    <script src="{{ url_for('static', filename='js/asistente-widget.js') }}"></script>
 
 </body>
 </html>
